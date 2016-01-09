@@ -17,7 +17,6 @@ public class DBConnector {
             Class.forName(jdbcDriver);
             conn = DriverManager.getConnection(dburl + "db", user, pass);
         } catch (SQLException ex) {
-
             conn = null;
 
             System.err.println(ex.getMessage());
