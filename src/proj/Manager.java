@@ -259,7 +259,7 @@ class Manager {
     private void list(ArrayList<Task> ts) {
         String leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
         for (Task t : ts) {
-            String done = (t.isFinished()) ? "XX" : "";
+            String done = (t.isFinished()) ? "DONE" : "";
             String id = t.getId() == -1 ? "" : Integer.toString(t.getId());
             System.out.format(leftAlignFormat, done, id, t.getName(), returnMarks(t.getMarks()), t.getNotes());
         }
