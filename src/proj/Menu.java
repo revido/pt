@@ -12,24 +12,32 @@ class Menu {
     }
 
     public void addMenu(String[] params) {
-        String s = "";
-        String n = "";
-        Boolean notes = false;
-        for (int i = 1; i < params.length; i++) {
-            if (params[i].equals("-n")) {
-                notes = true;
-                continue;
+        try {
+            if (params.length <= 1) {
+                System.err.println("No or incorrect values specified.");
+            } else {
+                String s = "";
+                String n = "";
+                Boolean notes = false;
+                for (int i = 1; i < params.length; i++) {
+                    if (params[i].equals("-n")) {
+                        notes = true;
+                        continue;
+                    }
+
+                    if (notes) {
+                        n += params[i] + " ";
+                    } else
+                        s += params[i] + " ";
+                }
+                s = s.trim();
+                n = n.trim();
+
+                man.add(s, n);
             }
-
-            if (notes) {
-                n += params[i] + " ";
-            } else
-                s += params[i] + " ";
+        } catch (Exception e) {
+            System.err.println("No or incorrect values specified.");
         }
-        s = s.trim();
-        n = n.trim();
-
-        man.add(s, n);
     }
 
     public void finishMenu() {
@@ -65,7 +73,11 @@ class Menu {
     }
 
     public void removeMenu(String[] params) {
-        this.man.remove(Integer.parseInt(params[1]));
+        try {
+            this.man.remove(Integer.parseInt(params[1]));
+        } catch (Exception e) {
+            System.err.println("No or incorrect values specified.");
+        }
     }
 
     public void removeAllMenu() {
@@ -85,7 +97,11 @@ class Menu {
     }
 
     public void switchMenu(String[] params) {
-        man.switchPos(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
+        try {
+            man.switchPos(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
+        } catch (Exception e) {
+            System.err.println("No or incorrect values specified.");
+        }
     }
 
     public void undoMenu() {

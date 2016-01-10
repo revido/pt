@@ -74,6 +74,22 @@ class Manager {
         }
     }
 
+    private boolean isLongBreak() {
+        int count = 0;
+        for (Task t : finishedTasks) {
+            count += t.getMarks();
+        }
+        for (Task t : unfinishedTasks) {
+            count += t.getMarks();
+        }
+
+        return count % 4 == 0 && count > 0;
+    }
+
+    private void sendMsg(String msg) throws IOException {
+        Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
+    }
+
     public void startPomodoro() {
         if (!this.unfinishedTasks.isEmpty()) {
             try {
@@ -85,14 +101,14 @@ class Manager {
                         System.out.println("abort.");
                     } else if (s.equals("y") || s.equals("Y")) {
                         countDown("Work", 1500);
-                        Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' 'Work Done!' ");
                         this.mark();
-                        if (unfinishedTasks.get(0).getMarks() == 4)
-                            countDown("Break", 900);
+                        sendMsg("Take a break!");
+                        if (isLongBreak())
+                            countDown("Long Break", 900);
                         else
                             countDown("Break", 300);
 
-                        Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' 'Break Over!' ");
+                        sendMsg("Break is over!");
                     } else
                         break;
                 }
@@ -152,6 +168,7 @@ class Manager {
                 }
             }
         }
+        this.changed = true;
     }
 
     public void removeAllTasks() {
@@ -298,6 +315,7 @@ class Manager {
             e.printStackTrace();
         }
     }
+
     class TaskListState {
         private final ArrayList<Task> finishedTasks;
         private final ArrayList<Task> unfinishedTasks;
