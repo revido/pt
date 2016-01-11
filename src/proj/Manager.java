@@ -132,7 +132,7 @@ class Manager {
     private void queryTodayTasks() {
         ResultSet rs = null;
         try {
-            String sql = "SELECT started, id, done, name, pomodoros, notes FROM info WHERE cast(current_timestamp() As DATE)=CURDATE();";
+            String sql = "SELECT started, id, done, name, pomodoros, notes FROM info WHERE cast(started As DATE)=CURDATE();";
             Statement stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
