@@ -1,10 +1,14 @@
+/*
+Create PomodoroTimer class extends Runable
+in there, there is a method wchich converts total seconds to a hour format.
+while this thread runs, it is poossible to poll the timer in order to show how many minutes are left. (by runing timer/t command)
+it should also be possible to attach (start) and detach (spacebar) from timer
+
+ */
+
 package proj;
 
 import proj.dbs.DBConnector;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -17,7 +21,7 @@ class Manager {
     private final Connection conn;
 
     public Manager() {
-        conn = DBConnector.getConnection();
+        conn = DBConnector.getConnection("~/.pt/pt");
         tableExists();
         this.finishedTasks = new ArrayList<>();
         this.unfinishedTasks = new ArrayList<>();
@@ -45,32 +49,22 @@ class Manager {
         }
     }
 
-    private void countDown(String msg, int maxSeconds) {
+    private PomodoroTimer t;
 
-        try {
-            while (maxSeconds >= 0) {
-                Thread.sleep(1000);
-                String minutes = Integer.toString(Math.floorDiv(maxSeconds, 60));
-                String seconds = Integer.toString(Math.floorMod(maxSeconds, 60));
+    public void startPomodoro() {
+        if (!this.unfinishedTasks.isEmpty()) {
+            if (t != null) {
+                if (isLongBreak())
+                    t = new PomodoroTimer(getCurrentTask(), true);
+                else
+                    t = new PomodoroTimer(getCurrentTask(), false);
+            } else
+                t = new PomodoroTimer(getCurrentTask(), false);
 
-                if (seconds.length() < 2) {
-                    seconds = "0" + seconds;
-                }
-
-                if (minutes.length() < 2) {
-                    minutes = "0" + minutes;
-                }
-
-                String time = minutes + ":" + seconds;
-                String output = msg + " " + time;
-                String ANSI_CLEAR = "\033[2K";
-                String ANSI_HOME = "\033[" + output.length() + "D";
-                System.out.print(ANSI_CLEAR + ANSI_HOME + output);
-                maxSeconds--;
-            }
-            System.out.println();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread th = new Thread(t);
+            th.start();
+        } else {
+            System.out.println("No task to work on.");
         }
     }
 
@@ -82,17 +76,14 @@ class Manager {
         for (Task t : unfinishedTasks) {
             count += t.getMarks();
         }
+        count++;
 
         return count % 4 == 0 && count > 0;
     }
 
-    private void sendMsg(String msg) throws IOException {
-        Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
-    }
-
+/*
     public void startPomodoro() {
         if (!this.unfinishedTasks.isEmpty()) {
-            try {
                 while (true) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
                     String s;
@@ -112,12 +103,10 @@ class Manager {
                     } else
                         break;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } else
             System.out.println("There is no task to work on.");
     }
+*/
 
     private void addToHistory() {
         TaskListState temp = new TaskListState(new ArrayList<>(this.finishedTasks), new ArrayList<>(this.unfinishedTasks));
@@ -241,8 +230,12 @@ class Manager {
         addToHistory();
     }
 
-    public void getCurrentTask() {
+    public void showCurrentTask() {
         System.out.println(this.unfinishedTasks.get(0).getName());
+    }
+
+    private Task getCurrentTask() {
+        return this.unfinishedTasks.get(0);
     }
 
 
@@ -314,6 +307,14 @@ class Manager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void showTime() {
+        if (t == null) {
+            System.out.println("No timer");
+            return;
+        }
+        System.out.println(t.showTime());
     }
 
     class TaskListState {

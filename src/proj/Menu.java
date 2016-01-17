@@ -60,8 +60,10 @@ class Menu {
         }
     }
 
+    public void getTime() {this.man.showTime();}
+
     public void getMenu() {
-        this.man.getCurrentTask();
+        this.man.showCurrentTask();
     }
 
     public void listMenu() {

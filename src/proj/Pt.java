@@ -32,6 +32,8 @@ class Pt {
                 switch (arguments[0]) {
                     case "":break;
                     case "start": f.startMenu(); break;
+                    case "timer":
+                    case "t": f.getTime(); break;
                     case "add": f.addMenu(arguments); break;
                     case "ls": f.listMenu(); break;
                     case "lsh": f.listHistoryMenu(); break;
