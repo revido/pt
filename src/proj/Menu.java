@@ -94,8 +94,8 @@ class Menu {
         man.saveTodayTasks();
     }
 
-    public void startMenu() {
-        man.startPomodoro();
+    public void startMenu(BufferedReader in) {
+        man.startPomodoro(in);
     }
 
     public void switchMenu(String[] params) {

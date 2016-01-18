@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.DriverManager;
 
 public class DBConnector {
-    public static Connection getConnection(String dbLocation) {
+    public static Connection getConnection() {
         Connection conn;
 
         String jdbcDriver = "org.h2.Driver";
@@ -13,7 +13,7 @@ public class DBConnector {
         String pass = "";
 
         try {
-            String dburl= "jdbc:h2:" + dbLocation;
+            String dburl= "jdbc:h2:~/.pt/pt";
             Class.forName(jdbcDriver);
             conn = DriverManager.getConnection(dburl, user, pass);
         } catch (SQLException ex) {

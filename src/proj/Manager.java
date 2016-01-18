@@ -9,6 +9,8 @@ it should also be possible to attach (start) and detach (spacebar) from timer
 package proj;
 
 import proj.dbs.DBConnector;
+
+import java.io.BufferedReader;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -21,7 +23,7 @@ class Manager {
     private final Connection conn;
 
     public Manager() {
-        conn = DBConnector.getConnection("~/.pt/pt");
+        conn = DBConnector.getConnection();
         tableExists();
         this.finishedTasks = new ArrayList<>();
         this.unfinishedTasks = new ArrayList<>();
@@ -50,21 +52,44 @@ class Manager {
     }
 
     private PomodoroTimer t;
+    private Thread th;
 
-    public void startPomodoro() {
-        if (!this.unfinishedTasks.isEmpty()) {
-            if (t != null) {
-                if (isLongBreak())
-                    t = new PomodoroTimer(getCurrentTask(), true);
-                else
+    public void startPomodoro(BufferedReader in) {
+        try {
+            if (!this.unfinishedTasks.isEmpty()) {
+                if (t != null) {
+                    if (t.getMaxSeconds() > 0) {
+                        KeyListener listener = new KeyListener(t, in);
+                        new Thread(listener).start();
+                        t.setContinuous(true);
+                        th.join();
+                        if (t.getMaxSeconds() > 0) {
+                            th = new Thread(t);
+                            th.start();
+                        }
+                        return;
+                    }
+                    if (isLongBreak())
+                        t = new PomodoroTimer(getCurrentTask(), true);
+                    else
+                        t = new PomodoroTimer(getCurrentTask(), false);
+                } else
                     t = new PomodoroTimer(getCurrentTask(), false);
-            } else
-                t = new PomodoroTimer(getCurrentTask(), false);
 
-            Thread th = new Thread(t);
-            th.start();
-        } else {
-            System.out.println("No task to work on.");
+                KeyListener listener = new KeyListener(t, in);
+                new Thread(listener).start();
+                th = new Thread(t);
+                t.setContinuous(true);
+                th.start();
+                th.join();
+                if (t.getMaxSeconds() > 0) {
+                    th = new Thread(t);
+                    th.start();
+                }
+            } else
+                System.out.println("No task to work on.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -337,4 +362,5 @@ class Manager {
             return this.unfinishedTasks;
         }
     }
+
 }
