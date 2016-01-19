@@ -1,16 +1,7 @@
-/*
-Create PomodoroTimer class extends Runable
-in there, there is a method wchich converts total seconds to a hour format.
-while this thread runs, it is poossible to poll the timer in order to show how many minutes are left. (by runing timer/t command)
-it should also be possible to attach (start) and detach (spacebar) from timer
-
- */
-
 package proj;
 
 import proj.dbs.DBConnector;
 
-import java.io.BufferedReader;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -52,46 +43,69 @@ class Manager {
     }
 
     private PomodoroTimer t;
-    private Thread th;
+    private Thread timerThread;
 
-    public void startPomodoro(BufferedReader in) {
+    public void resumePomodoro() {
+        if (t == null || timerThread == null || !t.isTimerRunning()) {
+            System.out.println("Pomodoro not started");
+            return;
+        }
+        t.setContinuous(true);
         try {
-            if (!this.unfinishedTasks.isEmpty()) {
-                if (t != null) {
-                    if (t.getMaxSeconds() > 0) {
-                        KeyListener listener = new KeyListener(t, in);
-                        new Thread(listener).start();
-                        t.setContinuous(true);
-                        th.join();
-                        if (t.getMaxSeconds() > 0) {
-                            th = new Thread(t);
-                            th.start();
-                        }
-                        return;
-                    }
-                    if (isLongBreak())
-                        t = new PomodoroTimer(getCurrentTask(), true);
-                    else
-                        t = new PomodoroTimer(getCurrentTask(), false);
-                } else
-                    t = new PomodoroTimer(getCurrentTask(), false);
-
-                KeyListener listener = new KeyListener(t, in);
-                new Thread(listener).start();
-                th = new Thread(t);
-                t.setContinuous(true);
-                th.start();
-                th.join();
-                if (t.getMaxSeconds() > 0) {
-                    th = new Thread(t);
-                    th.start();
+            if (t.isAlive()) {
+                Debugger.log("Joining Timer");
+                this.timerThread.join();
+                if (this.t.isAlive()) {
+                    Debugger.log("Sending Timer to background");
+                    this.t.setContinuous(false);
+                    this.timerThread = new Thread(this.t);
+                    this.timerThread.start();
                 }
-            } else
-                System.out.println("No task to work on.");
+                Debugger.log("Timer Joined");
+            } else {
+                Debugger.log("Joining Break");
+                this.breakThread.join();
+                if (this.t.getPomBreak().isAlive()) {
+                    Debugger.log("Sending Break to background");
+                    this.t.getPomBreak().setContinuous(false);
+                    this.breakThread = new Thread(this.t.getPomBreak());
+                    this.breakThread.start();
+                }
+                Debugger.log("Break Joined");
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+
+    public void startPomodoro() {
+        if (t != null && t.isAlive()) {
+            System.out.println("Timer already running.");
+            return;
+        }
+        if (!this.unfinishedTasks.isEmpty()) {
+            t = new PomodoroTimer(getCurrentTask(), isLongBreak());
+            timerThread = new Thread(t);
+            timerThread.start();
+            try {
+                timerThread.join();
+                if (t.isAlive()) {
+                    Debugger.log("Sending Timer to background");
+                    timerThread = new Thread(t);
+                    timerThread.start();
+                } else if (t.getPomBreak().isAlive()) {
+                    Debugger.log("Sending Break to background");
+                    breakThread = new Thread(t.getPomBreak());
+                    breakThread.start();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else
+            System.out.println("No task to work on.");
+    }
+
+    Thread breakThread;
 
     private boolean isLongBreak() {
         int count = 0;
@@ -105,33 +119,6 @@ class Manager {
 
         return count % 4 == 0 && count > 0;
     }
-
-/*
-    public void startPomodoro() {
-        if (!this.unfinishedTasks.isEmpty()) {
-                while (true) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-                    String s;
-                    System.out.print("Ready? [Y/N]> ");
-                    if ((s = in.readLine()).isEmpty()) {
-                        System.out.println("abort.");
-                    } else if (s.equals("y") || s.equals("Y")) {
-                        countDown("Work", 1500);
-                        this.mark();
-                        sendMsg("Take a break!");
-                        if (isLongBreak())
-                            countDown("Long Break", 900);
-                        else
-                            countDown("Break", 300);
-
-                        sendMsg("Break is over!");
-                    } else
-                        break;
-                }
-        } else
-            System.out.println("There is no task to work on.");
-    }
-*/
 
     private void addToHistory() {
         TaskListState temp = new TaskListState(new ArrayList<>(this.finishedTasks), new ArrayList<>(this.unfinishedTasks));
@@ -325,6 +312,14 @@ class Manager {
         }
     }
 
+    public void showTime() {
+        if (t == null) {
+            System.out.println("No timer");
+            return;
+        }
+        System.out.println(t.showTime());
+    }
+
     // Closes he database connection
     public void closeConnection() {
         try {
@@ -334,33 +329,5 @@ class Manager {
         }
     }
 
-    public void showTime() {
-        if (t == null) {
-            System.out.println("No timer");
-            return;
-        }
-        System.out.println(t.showTime());
-    }
-
-    class TaskListState {
-        private final ArrayList<Task> finishedTasks;
-        private final ArrayList<Task> unfinishedTasks;
-
-        public TaskListState next;
-
-        public TaskListState(ArrayList<Task> finishedTasks, ArrayList<Task> unfinishedTasks) {
-            this.finishedTasks = finishedTasks;
-            this.unfinishedTasks = unfinishedTasks;
-            this.next = null;
-        }
-
-        ArrayList<Task> getFinished() {
-            return this.finishedTasks;
-        }
-
-        ArrayList<Task> getUnfinished() {
-            return this.unfinishedTasks;
-        }
-    }
 
 }

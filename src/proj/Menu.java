@@ -1,5 +1,7 @@
 package proj;
 
+import jdk.nashorn.internal.runtime.Debug;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,7 +62,7 @@ class Menu {
         }
     }
 
-    public void getTime() {this.man.showTime();}
+    public void getTimeMenu() {this.man.showTime();}
 
     public void getMenu() {
         this.man.showCurrentTask();
@@ -95,7 +97,7 @@ class Menu {
     }
 
     public void startMenu(BufferedReader in) {
-        man.startPomodoro(in);
+        man.startPomodoro();
     }
 
     public void switchMenu(String[] params) {
@@ -108,5 +110,13 @@ class Menu {
 
     public void undoMenu() {
         man.undoChanges();
+    }
+
+    public void resumeMenu(BufferedReader in) {
+        man.resumePomodoro();
+    }
+
+    public void switchDebugMenu() {
+        Debugger.debug = !Debugger.debug;
     }
 }

@@ -1,41 +1,48 @@
+/*
+thread pomodoroWork
+thread pomodoroBreak
+
+Run Thread pomodoroWork. In there after maxSeconds=0 run Thread pomodoroBreak.
+
+If break thread is in pomodoroWork then kill thread and create a new pomodoroWork thread that runs in background.
+If break thread is in pomodoroBreak then kill thread and create a new pomodoroBreak thread that runs in background.
+ */
 package proj;
 
 import java.io.IOException;
 
 class PomodoroTimer implements Runnable {
-    private final int breakTimer;
-    private final String breakMsg;
-    private int maxSeconds = 1500;
-    private final int longBreak = 900;
-    private final int shortBreak = 300;
+    private static final boolean SEND_MSG = false;
+    private int time = 2;
     private boolean continuous;
     private final Task t;
     private boolean kill;
     private boolean onBreak;
+    private PomodoroBreak pomBreak;
+    boolean isLongBreak;
 
     public PomodoroTimer(Task t, boolean isLongBreak) {
-        setContinuous(false);
+        setContinuous(true);
         this.t = t;
-        if (isLongBreak) {
-            breakTimer = longBreak;
-            breakMsg = "Take_a_longer_break!";
-        } else {
-            breakTimer = shortBreak;
-            breakMsg = "Take_a_short_break!";
-        }
+        this.isLongBreak = isLongBreak;
     }
+
+    Thread keyListenerThread;
+    Thread breakThread;
 
     @Override
     public void run() {
-        if (!onBreak)
-            start();
-        else
-            start();
+        Debugger.log(">>>>>>>Timer Thread started.");
+        KeyListener listener = new KeyListener(this);
+        keyListenerThread = new Thread(listener);
+        keyListenerThread.start();
+        start();
+        Debugger.log(">>>>>>>Timer Thread killed.");
     }
 
     private void displayTime(String msg) {
-        String minutes = Integer.toString(Math.floorDiv(getMaxSeconds(), 60));
-        String seconds = Integer.toString(Math.floorMod(getMaxSeconds(), 60));
+        String minutes = Integer.toString(Math.floorDiv(getTime(), 60));
+        String seconds = Integer.toString(Math.floorMod(getTime(), 60));
 
         if (seconds.length() < 2) {
             seconds = "0" + seconds;
@@ -54,7 +61,7 @@ class PomodoroTimer implements Runnable {
 
     private void start() {
         try {
-            while (getMaxSeconds() >= 0) {
+            while (getTime() >= 0) {
                 if (kill) {
                     kill = false;
                     continuous = false;
@@ -62,42 +69,43 @@ class PomodoroTimer implements Runnable {
                 }
                 Thread.sleep(1000);
                 if (isContinuous()) {
-                    if (onBreak)
-                        displayTime("Break");
-                    else
-                        displayTime("Work");
+                    displayTime("Work");
                 }
-                maxSeconds--;
+                time--;
             }
-            if (!onBreak) {
-                t.addMark();
-                sendMsg(breakMsg);
-                this.maxSeconds = breakTimer;
-                onBreak = true;
-            } else {
-                sendMsg("Working_time!");
-                onBreak = false;
-                System.out.println();
-                System.out.println("Press Enter");
-            }
-
+            t.addMark();
+            onBreak = true;
+            keyListenerThread.interrupt();
+            pomBreak = new PomodoroBreak(isLongBreak, continuous);
+            breakThread = new Thread(getPomBreak());
+            breakThread.start();
+            breakThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+
     public String showTime() {
-        if (this.maxSeconds> 0) {
+        if (this.time > 0) {
             String what, minutes, seconds;
-            if (!onBreak) {
-                what = "Work ";
-                minutes = Integer.toString(Math.floorDiv(getMaxSeconds(), 60));
-                seconds = Integer.toString(Math.floorMod(getMaxSeconds(), 60));
-            } else {
-                what = "Break ";
-                minutes = Integer.toString(Math.floorDiv(breakTimer, 60));
-                seconds = Integer.toString(Math.floorMod(breakTimer, 60));
+            what = "Work ";
+            minutes = Integer.toString(Math.floorDiv(getTime(), 60));
+            seconds = Integer.toString(Math.floorMod(getTime(), 60));
+
+            if (seconds.length() < 2) {
+                seconds = "0" + seconds;
             }
+
+            if (minutes.length() < 2) {
+                minutes = "0" + minutes;
+            }
+            return what + minutes + ":" + seconds;
+        } else if (this.getPomBreak() != null && this.getPomBreak().getMaxSeconds() > 0) {
+            String what, minutes, seconds;
+            what = "Work ";
+            minutes = Integer.toString(Math.floorDiv(this.getPomBreak().getMaxSeconds(), 60));
+            seconds = Integer.toString(Math.floorMod(this.getPomBreak().getMaxSeconds(),60));
 
             if (seconds.length() < 2) {
                 seconds = "0" + seconds;
@@ -113,7 +121,8 @@ class PomodoroTimer implements Runnable {
 
     private void sendMsg(String msg) {
         try {
-            Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
+            if (SEND_MSG)
+                Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,19 +130,49 @@ class PomodoroTimer implements Runnable {
 
     public void killTimer() {
         kill = true;
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        PomodoroBreak b = this.getPomBreak();
+        if (b != null) {
+            b.killTimer();
         }
     }
+
     private boolean isContinuous() {
         return continuous;
     }
+
     public void setContinuous(boolean continuous) {
         this.continuous = continuous;
+        if (getPomBreak() != null) {
+            getPomBreak().setContinuous(continuous);
+        }
     }
-    public int getMaxSeconds() {
-        return maxSeconds;
+
+    public int getTime() {
+        return time;
+    }
+
+    public boolean isAlive() {
+        return this.getTime() > 0;
+    }
+
+    public boolean breakAlive() {
+        return this.getPomBreak().isAlive();
+    }
+
+    public Thread getBreakThread() {
+        return breakThread;
+    }
+
+    public boolean isBreakAlive() {
+        return this.getPomBreak() != null && getPomBreak().isAlive();
+
+    }
+
+    public boolean isTimerRunning() {
+        return this.isAlive() || this.isBreakAlive();
+    }
+
+    public PomodoroBreak getPomBreak() {
+        return pomBreak;
     }
 }

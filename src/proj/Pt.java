@@ -31,9 +31,11 @@ class Pt {
                 String[] arguments = s.split(" ");
                 switch (arguments[0]) {
                     case "": System.out.print("pt> ");break;
-                    case "start": f.startMenu(in); break;
+                    case "start": f.startMenu(in); System.out.print("\r\npt> "); break;
+                    case "resume": f.resumeMenu(in); System.out.print("\r\npt> "); break;
                     case "timer":
-                    case "t": f.getTime(); System.out.print("pt> ");break;
+                    case "t": f.getTimeMenu(); System.out.print("pt> ");break;
+                    case "debug": f.switchDebugMenu(); System.out.print("pt> ");break;
                     case "add": f.addMenu(arguments); System.out.print("pt> ");break;
                     case "ls": f.listMenu(); System.out.print("pt> ");break;
                     case "lsh": f.listHistoryMenu(); System.out.print("pt> ");break;
