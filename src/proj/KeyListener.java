@@ -6,16 +6,21 @@ import java.security.Key;
 import java.util.Scanner;
 
 class KeyListener implements Runnable {
-    private final PomodoroTimer t;
-    private final PomodoroBreak b;
-    private final BufferedReader in;
+//    private final PomodoroTimer t;
+//    private final PomodoroBreak b;
+//    private final BufferedReader in;
+    private final Pomodoro p;
 
-    public KeyListener(PomodoroTimer t, BufferedReader in) {
-        this.t = t;
-        b = null;
-        this.in = in;
+//    public KeyListener(PomodoroTimer t, BufferedReader in) {
+//        this.t = t;
+//        b = null;
+//        this.in = in;
+//    }
+
+    public KeyListener(Pomodoro p) {
+        this.p = p;
     }
-
+    /*
     public KeyListener(PomodoroTimer t) {
         in = null;
         b = null;
@@ -26,7 +31,7 @@ class KeyListener implements Runnable {
         in = null;
         t = null;
         this.b = b;
-    }
+    }*/
 
     Scanner sin;
 
@@ -39,10 +44,12 @@ class KeyListener implements Runnable {
                     break;
                 }
             }
-            if (t != null)
-                t.killTimer();
-            if(b != null)
-                b.killTimer();
+            if(p != null)
+                p.killTimer();
+//            if (t != null)
+//                t.killTimer();
+//            if(b != null)
+//                b.killTimer();
 
         } catch (IOException e) {
             e.printStackTrace();

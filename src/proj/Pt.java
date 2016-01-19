@@ -30,27 +30,28 @@ class Pt {
 
                 String[] arguments = s.split(" ");
                 switch (arguments[0]) {
-                    case "": System.out.print("pt> ");break;
-                    case "start": f.startMenu(in); System.out.print("\r\npt> "); break;
-                    case "resume": f.resumeMenu(in); System.out.print("\r\npt> "); break;
+                    case "": break;
+                    case "start": f.startMenu(in); break;
+                    case "resume": f.resumeMenu(in); break;
                     case "timer":
-                    case "t": f.getTimeMenu(); System.out.print("pt> ");break;
-                    case "debug": f.switchDebugMenu(); System.out.print("pt> ");break;
-                    case "add": f.addMenu(arguments); System.out.print("pt> ");break;
-                    case "ls": f.listMenu(); System.out.print("pt> ");break;
-                    case "lsh": f.listHistoryMenu(); System.out.print("pt> ");break;
-                    case "undo": f.undoMenu(); System.out.print("pt> ");break;
-                    case "save": f.saveMenu(); System.out.print("pt> ");break;
-                    case "done": f.finishMenu(); System.out.print("pt> ");break;
-                    case "mark": f.markMenu(); System.out.print("pt> ");break;
-                    case "get": f.getMenu(); System.out.print("pt> ");break;
-                    case "switch": f.switchMenu(arguments); System.out.print("pt> ");break;
-                    case "rm": f.removeMenu(arguments); System.out.print("pt> ");break;
-                    case "rmall": f.removeAllMenu(); System.out.print("pt> ");break;
+                    case "t": f.getTimeMenu(); break;
+                    case "debug": f.switchDebugMenu(); break;
+                    case "add": f.addMenu(arguments); break;
+                    case "ls": f.listMenu(); break;
+                    case "lsh": f.listHistoryMenu(); break;
+                    case "undo": f.undoMenu(); break;
+                    case "save": f.saveMenu(); break;
+                    case "done": f.finishMenu(); break;
+                    case "mark": f.markMenu(); break;
+                    case "get": f.getMenu(); break;
+                    case "switch": f.switchMenu(arguments); break;
+                    case "rm": f.removeMenu(arguments); break;
+                    case "rmall": f.removeAllMenu(); break;
                     case "exit":
                     case "quit": f.exitMenu(); break;
                     default: System.out.println("Unknown command.");
                 }
+                System.out.print("pt> ");
             }
         } catch (IOException e) {
             e.printStackTrace();

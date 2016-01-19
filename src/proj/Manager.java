@@ -45,41 +45,43 @@ class Manager {
     private PomodoroTimer t;
     private Thread timerThread;
 
+    private Pomodoro getRunning() {
+        if (t != null && t.isAlive())
+            return t;
+        if (t != null && t.getPomBreak()!= null && t.getPomBreak().isAlive())
+            return t.getPomBreak();
+
+        return null;
+    }
+
     public void resumePomodoro() {
         if (t == null || timerThread == null || !t.isTimerRunning()) {
             System.out.println("Pomodoro not started");
             return;
         }
-        t.setContinuous(true);
+        Pomodoro p = getRunning();
+        if (p == null) {
+            System.out.println("Error at resume. p = null");
+            System.exit(1);
+        }
         try {
-            if (t.isAlive()) {
-                Debugger.log("Joining Timer");
-                this.timerThread.join();
-                if (this.t.isAlive()) {
-                    Debugger.log("Sending Timer to background");
-                    this.t.setContinuous(false);
-                    this.timerThread = new Thread(this.t);
-                    this.timerThread.start();
-                }
-                Debugger.log("Timer Joined");
-            } else {
-                Debugger.log("Joining Break");
-                this.breakThread.join();
-                if (this.t.getPomBreak().isAlive()) {
-                    Debugger.log("Sending Break to background");
-                    this.t.getPomBreak().setContinuous(false);
-                    this.breakThread = new Thread(this.t.getPomBreak());
-                    this.breakThread.start();
-                }
-                Debugger.log("Break Joined");
+            p.setContinuous(true);
+            if(running.isAlive()) {
+                running.join();
+                System.out.println();
+
+                p = getRunning();
+                running = new Thread(p);
+                running.start();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+    Thread running;
 
     public void startPomodoro() {
-        if (t != null && t.isAlive()) {
+        if (getRunning() != null) {
             System.out.println("Timer already running.");
             return;
         }
@@ -89,15 +91,10 @@ class Manager {
             timerThread.start();
             try {
                 timerThread.join();
-                if (t.isAlive()) {
-                    Debugger.log("Sending Timer to background");
-                    timerThread = new Thread(t);
-                    timerThread.start();
-                } else if (t.getPomBreak().isAlive()) {
-                    Debugger.log("Sending Break to background");
-                    breakThread = new Thread(t.getPomBreak());
-                    breakThread.start();
-                }
+                System.out.println();
+                Pomodoro p = getRunning();
+                running = new Thread(p);
+                running.start();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -317,10 +314,12 @@ class Manager {
             System.out.println("No timer");
             return;
         }
-        System.out.println(t.showTime());
+        if (t.printTimeSingle().equals("")) {
+            System.out.println("No timer");
+        }
     }
 
-    // Closes he database connection
+    // Closes the database connection
     public void closeConnection() {
         try {
             if (conn != null) conn.close();
