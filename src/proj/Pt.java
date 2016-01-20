@@ -31,8 +31,8 @@ class Pt {
                 String[] arguments = s.split(" ");
                 switch (arguments[0]) {
                     case "": break;
-                    case "start": f.startMenu(in); break;
-                    case "resume": f.resumeMenu(in); break;
+                    case "start": f.startMenu(); break;
+                    case "resume": f.resumeMenu(); break;
                     case "timer":
                     case "t": f.getTimeMenu(); break;
                     case "debug": f.switchDebugMenu(); break;

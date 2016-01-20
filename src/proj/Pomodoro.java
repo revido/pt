@@ -1,23 +1,31 @@
 package proj;
 
+import jdk.nashorn.internal.runtime.Debug;
+
 import java.io.IOException;
 
-public abstract class Pomodoro implements Runnable {
+public class Pomodoro implements Runnable {
 
-    private int time = 3;
+    private final Task currentTask;
+    private int time = 1500;
     protected final int shortBreak = 300;
     protected final int longBreak = 900;
 
     private boolean SEND_MSG;
-    private String msg;
     private boolean continuous;
-    private boolean kill;
     Thread keyListenerThread;
+    public String WORK_MSG = "Working_Time!";
+    private String BREAK_MSG_LONG = "Take_a_longer_break!";
+    private String BREAK_MSG_SHORT = "Take_a_short_break!";
+    private boolean isLongBreak;
+    private boolean onWork;
 
 
-    public Pomodoro() {
+    public Pomodoro(boolean isLongBreak, Task currentTask) {
+        this.currentTask = currentTask;
+        this.isLongBreak = isLongBreak;
         setContinuous(true);
-        this.SEND_MSG = false;
+        this.SEND_MSG = true;
     }
 
     @Override
@@ -26,72 +34,81 @@ public abstract class Pomodoro implements Runnable {
     }
 
     private void start() {
-        Debugger.log(this.timerType() + " Thread started.");
-
-        keyListenerThread = new Thread(new KeyListener(this));
+        Debugger.log("Thread started");
+        keyListenerThread = new Thread(new KeyListener(Thread.currentThread()));
         keyListenerThread.start();
 
-        sendMsg(this.msg);
         try {
-            while (getTime() >= 0) {
-                if (kill) {
-                    kill = false;
-                    continuous = false;
-                    return;
+            while (getTime() >= 0 || onWork) {
+                printTime();
+                countDown();
+                if (getTime() <= 0 && onWork) {
+                    sendMsg(getBreakMsg());
+                    currentTask.addMark();
+                    time = getBreakLength();
+                    setOnWork(false);
                 }
-                Thread.sleep(1000);
-                if (isContinuous()) {
-                    printTime();
-                }
-                time--;
+                sleep();
             }
-            this.keyListenerThread.interrupt();
-            work();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
+            Debugger.log("Thread interrupted");
         }
-        Debugger.log(this.timerType() + " Thread stopped.");
+        if (getTime() <= 0)
+            sendMsg(WORK_MSG);
+        System.out.println();
+        keyListenerThread.interrupt();
+        Debugger.log("Thread finished");
     }
 
+    public void setOnWork(boolean onWork) {
+        Debugger.log("Setting onWork to " + ((onWork) ? "true" : "false"));
+        this.onWork = onWork;
+    }
+
+    private void countDown() {
+        time--;
+    }
+
+    private void sleep() throws InterruptedException {
+        Thread.sleep(1000);
+    }
+
+    private int getBreakLength() {
+        return (isLongBreak) ? longBreak : shortBreak;
+    }
 
     private void printTime() {
-        String output = printTimeSingle();
-        String ANSI_CLEAR = "\033[2K";
-        String ANSI_HOME = "\033[" + output.length() + "D";
-        System.out.print(ANSI_CLEAR + ANSI_HOME + output);
+        if (continuous) {
+            String output = printTimeSingle();
+            String ANSI_CLEAR = "\033[2K";
+            String ANSI_HOME = "\033[" + output.length() + "D";
+            System.out.print(ANSI_CLEAR + ANSI_HOME + output);
+        }
     }
 
     public String printTimeSingle() {
-        if (this.getTime() > 0) {
-            String type, minutes, seconds;
-            type = this.timerType();
-            int tempTime = this.getTime();
+        String type, minutes, seconds;
+        if (isOnWork())
+            type = "Work";
+        else
+            type = "Break";
 
-            minutes = Integer.toString(Math.floorDiv(tempTime, 60));
-            seconds = Integer.toString(Math.floorMod(tempTime, 60));
+        int tempTime = this.getTime();
 
-            if (seconds.length() < 2) {
-                seconds = "0" + seconds;
-            }
+        minutes = Integer.toString(Math.floorDiv(tempTime, 60));
+        seconds = Integer.toString(Math.floorMod(tempTime, 60));
 
-            if (minutes.length() < 2) {
-                minutes = "0" + minutes;
-            }
-            return type + " " + minutes + ":" + seconds;
+        if (seconds.length() < 2) {
+            seconds = "0" + seconds;
         }
-        return "";
+
+        if (minutes.length() < 2) {
+            minutes = "0" + minutes;
+        }
+        return type + " " + minutes + ":" + seconds;
     }
 
-    private String timerType() {
-        if (this instanceof PomodoroTimer) {
-            return "Work";
-        } else
-            return "Break";
-    }
-
-
-    private void sendMsg(String msg) {
+    public void sendMsg(String msg) {
         try {
             if (SEND_MSG)
                 Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
@@ -100,13 +117,19 @@ public abstract class Pomodoro implements Runnable {
         }
     }
 
-    abstract void work();
+    public String getBreakMsg() {
+        if (isLongBreak)
+            return this.BREAK_MSG_LONG;
+        else
+            return this.BREAK_MSG_SHORT;
+    }
 
     protected boolean isContinuous() {
         return continuous;
     }
 
     public void setContinuous(boolean continuous) {
+        Debugger.log("Setting continuous to " + ((continuous) ? "true" : "false"));
         this.continuous = continuous;
     }
 
@@ -114,19 +137,11 @@ public abstract class Pomodoro implements Runnable {
         return this.time;
     }
 
+    public boolean isOnWork() {
+        return onWork;
+    }
+
     public boolean isAlive() {
-        return this.getTime() > 0;
-    }
-
-    public void killTimer() {
-        kill = true;
-    }
-
-    protected void setTimer(int time) {
-        this.time = time;
-    }
-
-    protected void setMsg(String msg) {
-        this.msg = msg;
+        return getTime() > 0;
     }
 }

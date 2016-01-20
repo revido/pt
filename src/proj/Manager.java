@@ -42,65 +42,74 @@ class Manager {
         }
     }
 
-    private PomodoroTimer t;
-    private Thread timerThread;
-
-    private Pomodoro getRunning() {
-        if (t != null && t.isAlive())
-            return t;
-        if (t != null && t.getPomBreak()!= null && t.getPomBreak().isAlive())
-            return t.getPomBreak();
-
-        return null;
+    private void sendToBack() {
+        if (pp.isAlive()) {
+            Debugger.log("Sending Thread to background.");
+            pp.setContinuous(false);
+            running = new Thread(pp);
+            running.start();
+        }
     }
 
-    public void resumePomodoro() {
-        if (t == null || timerThread == null || !t.isTimerRunning()) {
-            System.out.println("Pomodoro not started");
-            return;
-        }
-        Pomodoro p = getRunning();
-        if (p == null) {
-            System.out.println("Error at resume. p = null");
-            System.exit(1);
-        }
-        try {
-            p.setContinuous(true);
-            if(running.isAlive()) {
-                running.join();
-                System.out.println();
+    Thread running;
+    Pomodoro pp;
 
-                p = getRunning();
-                running = new Thread(p);
+    public void timer() {
+        try {
+            if (running != null && running.isAlive()) {
+                // timer hasn't goten to 0
+                pp.setContinuous(true);
+                running.join();
+                sendToBack();
+            } else {
+                // timer start + after once finished
+                pp = new Pomodoro(isLongBreak(), getCurrentTask());
+                pp.setOnWork(true);
+                pp.setContinuous(true);
+                running = new Thread(pp);
                 running.start();
+                running.join();
+                sendToBack();
             }
+
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-    Thread running;
-
-    public void startPomodoro() {
-        if (getRunning() != null) {
-            System.out.println("Timer already running.");
-            return;
-        }
-        if (!this.unfinishedTasks.isEmpty()) {
-            t = new PomodoroTimer(getCurrentTask(), isLongBreak());
-            timerThread = new Thread(t);
-            timerThread.start();
-            try {
-                timerThread.join();
-                System.out.println();
-                Pomodoro p = getRunning();
-                running = new Thread(p);
-                running.start();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } else
-            System.out.println("No task to work on.");
-    }
+//
+//    public void resumePomodoro() {
+//        try {
+//            pp.setContinuous(true);
+//            running = new Thread(pp);
+//            running.start();
+//            running.join();
+//
+//            pp.setContinuous(false);
+//            running = new Thread(pp);
+//            running.start();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void startPomodoro() {
+//        try {
+//            pp = new Pomodoro(isLongBreak());
+//            pp.setContinuous(true);
+//            running = new Thread(pp);
+//            running.start();
+//            running.join();
+//
+//            //Hintergrund
+//            pp.setContinuous(false);
+//            running = new Thread(pp);
+//            running.start();
+//
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     Thread breakThread;
 
@@ -310,13 +319,11 @@ class Manager {
     }
 
     public void showTime() {
-        if (t == null) {
+        if (pp == null) {
             System.out.println("No timer");
             return;
         }
-        if (t.printTimeSingle().equals("")) {
-            System.out.println("No timer");
-        }
+        System.out.println(pp.printTimeSingle());
     }
 
     // Closes the database connection
