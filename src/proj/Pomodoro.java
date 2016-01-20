@@ -1,23 +1,21 @@
 package proj;
 
-import jdk.nashorn.internal.runtime.Debug;
-
 import java.io.IOException;
 
-public class Pomodoro implements Runnable {
+class Pomodoro implements Runnable {
 
     private final Task currentTask;
     private int time = 1500;
-    protected final int shortBreak = 300;
-    protected final int longBreak = 900;
+    private final int shortBreak = 300;
+    private final int longBreak = 900;
 
-    private boolean SEND_MSG;
+    private final boolean SEND_MSG;
     private boolean continuous;
-    Thread keyListenerThread;
-    public String WORK_MSG = "Working_Time!";
-    private String BREAK_MSG_LONG = "Take_a_longer_break!";
-    private String BREAK_MSG_SHORT = "Take_a_short_break!";
-    private boolean isLongBreak;
+    private Thread keyListenerThread;
+    private final String WORK_MSG = "Working_Time!";
+    private final String BREAK_MSG_LONG = "Take_a_longer_break!";
+    private final String BREAK_MSG_SHORT = "Take_a_short_break!";
+    private final boolean isLongBreak;
     private boolean onWork;
 
 
@@ -108,7 +106,7 @@ public class Pomodoro implements Runnable {
         return type + " " + minutes + ":" + seconds;
     }
 
-    public void sendMsg(String msg) {
+    private void sendMsg(String msg) {
         try {
             if (SEND_MSG)
                 Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
@@ -117,15 +115,11 @@ public class Pomodoro implements Runnable {
         }
     }
 
-    public String getBreakMsg() {
+    private String getBreakMsg() {
         if (isLongBreak)
             return this.BREAK_MSG_LONG;
         else
             return this.BREAK_MSG_SHORT;
-    }
-
-    protected boolean isContinuous() {
-        return continuous;
     }
 
     public void setContinuous(boolean continuous) {
@@ -133,11 +127,11 @@ public class Pomodoro implements Runnable {
         this.continuous = continuous;
     }
 
-    public int getTime() {
+    private int getTime() {
         return this.time;
     }
 
-    public boolean isOnWork() {
+    private boolean isOnWork() {
         return onWork;
     }
 

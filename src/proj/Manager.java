@@ -51,8 +51,8 @@ class Manager {
         }
     }
 
-    Thread running;
-    Pomodoro pp;
+    private Thread running;
+    private Pomodoro pp;
 
     public void timer() {
         try {
@@ -110,8 +110,6 @@ class Manager {
 //            e.printStackTrace();
 //        }
 //    }
-
-    Thread breakThread;
 
     private boolean isLongBreak() {
         int count = 0;

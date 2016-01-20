@@ -10,7 +10,7 @@ class KeyListener implements Runnable {
         this.pomThread = pomThread;
     }
 
-    Scanner sin;
+    private Scanner sin;
 
     @Override
     public void run() {
