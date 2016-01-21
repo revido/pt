@@ -1,29 +1,28 @@
 package proj;
 
+import proj.config.Config;
+
 import java.io.IOException;
 
 class Pomodoro implements Runnable {
 
     private final Task currentTask;
-    private int time = 1500;
-    private final int shortBreak = 300;
-    private final int longBreak = 900;
+    private int time;
 
-    private final boolean SEND_MSG;
     private boolean continuous;
     private Thread keyListenerThread;
-    private final String WORK_MSG = "Working_Time!";
-    private final String BREAK_MSG_LONG = "Take_a_longer_break!";
-    private final String BREAK_MSG_SHORT = "Take_a_short_break!";
     private final boolean isLongBreak;
     private boolean onWork;
+    private Config config;
 
 
-    public Pomodoro(boolean isLongBreak, Task currentTask) {
+    public Pomodoro(boolean isLongBreak, Task currentTask, Config config) {
+        this.config = config;
+        time = config.getPomodoro();
+
         this.currentTask = currentTask;
         this.isLongBreak = isLongBreak;
         setContinuous(true);
-        this.SEND_MSG = true;
     }
 
     @Override
@@ -52,7 +51,7 @@ class Pomodoro implements Runnable {
             Debugger.log("Thread interrupted");
         }
         if (getTime() <= 0)
-            sendMsg(WORK_MSG);
+            sendMsg(config.getWorkMsg());
         System.out.println();
         keyListenerThread.interrupt();
         Debugger.log("Thread finished");
@@ -72,7 +71,7 @@ class Pomodoro implements Runnable {
     }
 
     private int getBreakLength() {
-        return (isLongBreak) ? longBreak : shortBreak;
+        return (isLongBreak) ? config.getLongBreak() : config.getShortBreak();
     }
 
     private void printTime() {
@@ -108,7 +107,7 @@ class Pomodoro implements Runnable {
 
     private void sendMsg(String msg) {
         try {
-            if (SEND_MSG)
+            if (config.getAllowMsg())
                 Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,9 +116,9 @@ class Pomodoro implements Runnable {
 
     private String getBreakMsg() {
         if (isLongBreak)
-            return this.BREAK_MSG_LONG;
+            return config.getLongMsg();
         else
-            return this.BREAK_MSG_SHORT;
+            return config.getShortMsg();
     }
 
     public void setContinuous(boolean continuous) {

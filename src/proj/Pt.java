@@ -1,15 +1,20 @@
 package proj;
 
+import proj.config.ConfigManager;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 class Pt {
     private final Manager man;
+    ConfigManager confMan;
 
     public Pt() {
         shutDownHook();
-        man = new Manager();
+        confMan = new ConfigManager();
+        confMan.load();
+        man = new Manager(confMan.getConfig());
     }
 
     public void runProgram() {

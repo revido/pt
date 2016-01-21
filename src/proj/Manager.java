@@ -1,5 +1,6 @@
 package proj;
 
+import proj.config.Config;
 import proj.dbs.DBConnector;
 
 import java.sql.*;
@@ -12,8 +13,12 @@ class Manager {
     private TaskListState history;
     private boolean changed;
     private final Connection conn;
+    Config conf;
 
-    public Manager() {
+    public Manager(Config conf) {
+        this.conf = conf;
+        Debugger.debug = conf.getDebug();
+        Debugger.log("Initializing Manager.");
         conn = DBConnector.getConnection();
         tableExists();
         this.finishedTasks = new ArrayList<>();
@@ -63,7 +68,7 @@ class Manager {
                 sendToBack();
             } else {
                 // timer start + after once finished
-                pp = new Pomodoro(isLongBreak(), getCurrentTask());
+                pp = new Pomodoro(isLongBreak(), getCurrentTask(), conf);
                 pp.setOnWork(true);
                 pp.setContinuous(true);
                 running = new Thread(pp);
@@ -77,39 +82,6 @@ class Manager {
             e.printStackTrace();
         }
     }
-//
-//    public void resumePomodoro() {
-//        try {
-//            pp.setContinuous(true);
-//            running = new Thread(pp);
-//            running.start();
-//            running.join();
-//
-//            pp.setContinuous(false);
-//            running = new Thread(pp);
-//            running.start();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void startPomodoro() {
-//        try {
-//            pp = new Pomodoro(isLongBreak());
-//            pp.setContinuous(true);
-//            running = new Thread(pp);
-//            running.start();
-//            running.join();
-//
-//            //Hintergrund
-//            pp.setContinuous(false);
-//            running = new Thread(pp);
-//            running.start();
-//
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private boolean isLongBreak() {
         int count = 0;

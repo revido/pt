@@ -1,6 +1,6 @@
 package proj;
 
-class Debugger {
+public class Debugger {
     public static boolean debug;
 
     public static void log(Object o) {
