@@ -1,7 +1,5 @@
-package proj;
-
-import proj.config.Config;
-import proj.dbs.DBConnector;
+import config.Config;
+import dbs.DBConnector;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package proj.dbs;
+package dbs;
 
 import java.sql.Connection;
 import java.sql.SQLException;

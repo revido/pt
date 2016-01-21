@@ -1,6 +1,4 @@
-package proj;
-
-import proj.config.ConfigManager;
+import config.ConfigManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;

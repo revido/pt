@@ -1,6 +1,4 @@
-package proj;
-
-import proj.config.Config;
+import config.Config;
 
 import java.io.IOException;
 

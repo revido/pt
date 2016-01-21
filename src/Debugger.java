@@ -1,5 +1,3 @@
-package proj;
-
 class Debugger {
     public static boolean debug;
 
