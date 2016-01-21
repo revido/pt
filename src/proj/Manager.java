@@ -13,7 +13,7 @@ class Manager {
     private TaskListState history;
     private boolean changed;
     private final Connection conn;
-    Config conf;
+    private final Config conf;
 
     public Manager(Config conf) {
         this.conf = conf;

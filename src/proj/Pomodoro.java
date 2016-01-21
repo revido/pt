@@ -13,7 +13,7 @@ class Pomodoro implements Runnable {
     private Thread keyListenerThread;
     private final boolean isLongBreak;
     private boolean onWork;
-    private Config config;
+    private final Config config;
 
 
     public Pomodoro(boolean isLongBreak, Task currentTask, Config config) {

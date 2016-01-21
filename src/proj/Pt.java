@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 
 class Pt {
     private final Manager man;
-    ConfigManager confMan;
+    private final ConfigManager confMan;
 
     public Pt() {
         shutDownHook();

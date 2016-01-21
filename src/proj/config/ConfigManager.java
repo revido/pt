@@ -5,9 +5,9 @@ import java.util.Properties;
 
 public class ConfigManager {
     private final String location;
-    Properties prop;
-    InputStream input;
-    OutputStream output;
+    private final Properties prop;
+    private InputStream input;
+    private OutputStream output;
     private Config config;
 
     public ConfigManager() {
@@ -15,7 +15,7 @@ public class ConfigManager {
         location = System.getProperty("user.home") + File.separator + ".pt" + File.separator + "config";
     }
 
-    public void saveDefaultConfig() {
+    private void saveDefaultConfig() {
         try {
             output = new FileOutputStream(location);
             prop.setProperty("debug", "false");
