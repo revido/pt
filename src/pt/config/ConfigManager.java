@@ -1,4 +1,4 @@
-package config;
+package pt.config;
 
 import java.io.*;
 import java.util.Properties;

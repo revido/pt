@@ -1,3 +1,5 @@
+package pt;
+
 class Debugger {
     public static boolean debug;
 

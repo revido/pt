@@ -1,4 +1,4 @@
-package config;
+package pt.config;
 
 public class Config {
     private int pomodoro;

@@ -1,5 +1,5 @@
 // Build pattern
-package config;
+package pt.config;
 
 public class ConfigBuilder {
     int pomodoro;

@@ -1,4 +1,6 @@
-import config.Config;
+package pt;
+
+import pt.config.Config;
 
 import java.io.IOException;
 
@@ -106,7 +108,7 @@ class Pomodoro implements Runnable {
     private void sendMsg(String msg) {
         try {
             if (config.getAllowMsg())
-                Runtime.getRuntime().exec("/home/alma/.config/alma/pt.sh 'Pomodoro' '" + msg + "' ");
+                Runtime.getRuntime().exec("/home/alma/.pt.config/alma/pt.sh 'pt.Pomodoro' '" + msg + "' ");
         } catch (IOException e) {
             e.printStackTrace();
         }

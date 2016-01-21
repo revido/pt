@@ -1,3 +1,5 @@
+package pt;
+
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -12,12 +14,12 @@ class KeyListener implements Runnable {
 
     @Override
     public void run() {
-        Debugger.log("KeyListener running.");
+        Debugger.log("pt.KeyListener running.");
         try {
             sin = new Scanner(System.in);
             while (hasNextLine()) {
                 if (sin.nextLine().equals("")) {
-                    Debugger.log("KeyListener killed.");
+                    Debugger.log("pt.KeyListener killed.");
                     break;
                 }
             }
@@ -34,7 +36,7 @@ class KeyListener implements Runnable {
             try {
                 Thread.currentThread().sleep(10);
             } catch (InterruptedException e) {
-                Debugger.log("KeyListener killed.");
+                Debugger.log("pt.KeyListener killed.");
                 return false;
             }
         }

@@ -1,10 +1,12 @@
-import config.Config;
-import dbs.DBConnector;
+package pt;
+
+import pt.config.Config;
+import pt.dbs.DBConnector;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-class Manager {
+public class Manager {
 
     private ArrayList<Task> finishedTasks;
     private ArrayList<Task> unfinishedTasks;
@@ -16,7 +18,7 @@ class Manager {
     public Manager(Config conf) {
         this.conf = conf;
         Debugger.debug = conf.getDebug();
-        Debugger.log("Initializing Manager.");
+        Debugger.log("Initializing pt.Manager.");
         conn = DBConnector.getConnection();
         tableExists();
         this.finishedTasks = new ArrayList<>();
@@ -131,7 +133,7 @@ class Manager {
     }
 
     // int id: ID of task to remove
-    // Removes Task with specified ID from the unfinished tasks list
+    // Removes pt.Task with specified ID from the unfinished tasks list
     // and updates the following IDs
     public void remove(int id) {
         for (int i = 0; i < unfinishedTasks.size(); i++) {
@@ -170,7 +172,7 @@ class Manager {
         }
     }
 
-    void saveTodayTasks() {
+    public void saveTodayTasks() {
         try {
             if (changed) {
                 Statement stmt = conn.createStatement();
