@@ -8,9 +8,7 @@ import java.util.ArrayList;
 
 public class Manager {
 
-    private ArrayList<Task> finishedTasks;
-    private ArrayList<Task> unfinishedTasks;
-    private TaskListState history;
+    private final TaskListState tasks;
     private boolean changed;
     private final Connection conn;
     private final Config conf;
@@ -21,8 +19,8 @@ public class Manager {
         Debugger.log("Initializing pt.Manager.");
         conn = DBConnector.getConnection();
         tableExists();
-        this.finishedTasks = new ArrayList<>();
-        this.unfinishedTasks = new ArrayList<>();
+
+        tasks = new TaskListState();
         queryTodayTasks();
     }
 
@@ -83,27 +81,9 @@ public class Manager {
         }
     }
 
-    private boolean isLongBreak() {
-        int count = 0;
-        for (Task t : finishedTasks) {
-            count += t.getMarks();
-        }
-        for (Task t : unfinishedTasks) {
-            count += t.getMarks();
-        }
-        count++;
-
-        return count % 4 == 0 && count > 0;
-    }
 
     private void addToHistory() {
-        TaskListState temp = new TaskListState(new ArrayList<>(this.finishedTasks), new ArrayList<>(this.unfinishedTasks));
-        if (history == null) {
-            history = temp;
-        } else {
-            temp.next = history;
-            history = temp;
-        }
+        tasks.saveToHistory();
     }
 
     private void queryTodayTasks() {
@@ -115,12 +95,9 @@ public class Manager {
             while (rs.next()) {
                 Task t = new Task(rs.getTimestamp(1), rs.getInt(2), rs.getBoolean(3),
                         rs.getString(4), rs.getInt(5), rs.getString(6));
-                if (t.isFinished())
-                    this.finishedTasks.add(t);
-                else
-                    this.unfinishedTasks.add(t);
+
+                tasks.add(t);
             }
-            addToHistory();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -133,30 +110,14 @@ public class Manager {
     }
 
     // int id: ID of task to remove
-    // Removes pt.Task with specified ID from the unfinished tasks list
+    // Removes pt.Task with specified ID from the unfinished tasks displayTasks
     // and updates the following IDs
     public void remove(int id) {
-        for (int i = 0; i < unfinishedTasks.size(); i++) {
-            Task t = unfinishedTasks.get(i);
-            if (t.getId() == id) {
-                unfinishedTasks.remove(i);
-                if (i < unfinishedTasks.size()) {
-                    unfinishedTasks.get(i).setId(unfinishedTasks.get(i).getId() - 1);
-                }
-            }
-        }
-        this.changed = true;
-    }
-
-    public void removeAllTasks() {
-        this.changed = true;
-        this.unfinishedTasks.clear();
-        this.finishedTasks.clear();
-        addToHistory();
+        tasks.remove(id);
     }
 
     public boolean isChanged() {
-        return changed;
+        return tasks.isChanged();
     }
 
     private void prepareStatement(ArrayList<Task> list) throws SQLException {
@@ -172,6 +133,19 @@ public class Manager {
         }
     }
 
+    private boolean isLongBreak() {
+        int count = 0;
+        for (Task t : tasks.getCurrentState().getFinished()) {
+            count += t.getMarks();
+        }
+        for (Task t : tasks.getCurrentState().getFinished()) {
+            count += t.getMarks();
+        }
+        count++;
+
+        return count % 4 == 0 && count > 0;
+    }
+
     public void saveTodayTasks() {
         try {
             if (changed) {
@@ -179,8 +153,8 @@ public class Manager {
                 String sql = "DELETE FROM info WHERE cast(current_timestamp() As DATE)=CURDATE();";
                 stmt.executeUpdate(sql);
 
-                prepareStatement(unfinishedTasks);
-                prepareStatement(finishedTasks);
+                prepareStatement(tasks.getCurrentState().getUnfinished());
+                prepareStatement(tasks.getCurrentState().getFinished());
 
                 System.out.println("Saved.");
             } else
@@ -192,100 +166,53 @@ public class Manager {
     }
 
     public void add(String name, String notes) {
-        this.unfinishedTasks.add(new Task(unfinishedTasks.size() + 1, name, notes));
-        this.changed = true;
-
-        addToHistory();
+        tasks.add(name, notes);
     }
 
     public void mark() {
-        this.unfinishedTasks.get(0).addMark();
-        this.changed = true;
-
         addToHistory();
+        getCurrentTask().addMark();
+        tasks.change();
     }
 
     public void finish() {
-        unfinishedTasks.get(0).finish();
-        finishedTasks.add(unfinishedTasks.get(0));
-        unfinishedTasks.remove(0);
+        addToHistory();
+        getCurrentTask().finish();
+        tasks.add(getCurrentTask());
+        tasks.remove(0);
 
-        for (Task t : unfinishedTasks) {
+        for (Task t : tasks.getCurrentState().getUnfinished()) {
             t.setId(t.getId() - 1);
         }
         this.changed = true;
-
-        addToHistory();
     }
 
     public void showCurrentTask() {
-        System.out.println(this.unfinishedTasks.get(0).getName());
+        System.out.println(getCurrentTask().getName());
     }
 
     private Task getCurrentTask() {
-        return this.unfinishedTasks.get(0);
+        return tasks.getCurrentState().getUnfinished().get(0);
     }
 
-
-    public void list() {
-        System.out.format("+------+----+----------------------------------+---------------+---------------------------+%n");
-        System.out.format("| Done | ID |               Name               |     Marks     |           Notes           |%n");
-        System.out.format("+------+----+----------------------------------+---------------+---------------------------+%n");
-        list(this.unfinishedTasks);
-        System.out.format("+------+----+----------------------------------+---------------+---------------------------+%n");
-        list(this.finishedTasks);
-        System.out.format("+------+----+----------------------------------+---------------+---------------------------+%n");
-    }
-
-    private void list(ArrayList<Task> ts) {
-        String leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
-        for (Task t : ts) {
-            String done = (t.isFinished()) ? "DONE" : "";
-            String id = t.getId() == -1 ? "" : Integer.toString(t.getId());
-            System.out.format(leftAlignFormat, done, id, t.getName(), returnMarks(t.getMarks()), t.getNotes());
-        }
-    }
-
-    private String returnMarks(int marks) {
-        String mark = "";
-        for (int i = 0; i < marks; i++) {
-            mark += "X ";
-        }
-        return mark;
+    public void removeAllTasks() {
+        tasks.removeAllTasks();
     }
 
     public void switchPos(int i, int i1) {
-        int index1 = i - 1;
-        int index2 = i1 - 1;
-
-        Task t1 = this.unfinishedTasks.get(index1);
-        Task t2 = this.unfinishedTasks.get(index2);
-
-        String tempName = t1.getName();
-        t1.setName(t2.getName());
-        t2.setName(tempName);
-        this.changed = true;
-
-        addToHistory();
+        tasks.switchPos(i, i1);
     }
 
     public void undoChanges() {
-        if (history.next != null) {
-            this.finishedTasks = history.next.getFinished();
-            this.unfinishedTasks = history.next.getUnfinished();
+        tasks.undoChanges();
+    }
 
-            this.history = history.next;
-        } else
-            System.out.println("Already at the latest change.");
+    public void listTasks() {
+        tasks.displayCurrentTasks();
     }
 
     public void listHistory() {
-        TaskListState temp = history;
-        while (temp != null) {
-            list(temp.getUnfinished());
-            System.out.println("----------------------");
-            temp = temp.next;
-        }
+        tasks.displayHistory();
     }
 
     public void showTime() {

@@ -11,23 +11,23 @@ public class AddOperation implements Operation {
 
     @Override
     public void execute(String[] params) {
-         try {
-            if (params.length <= 1) {
+        try {
+            if (params.length == 0) {
                 System.err.println("No or incorrect values specified.");
             } else {
                 String s = "";
                 String n = "";
                 Boolean notes = false;
-                for (int i = 1; i < params.length; i++) {
-                    if (params[i].equals("-n")) {
+                for (String param : params) {
+                    if (param.equals("-n")) {
                         notes = true;
                         continue;
                     }
 
                     if (notes) {
-                        n += params[i] + " ";
+                        n += param + " ";
                     } else
-                        s += params[i] + " ";
+                        s += param + " ";
                 }
                 s = s.trim();
                 n = n.trim();

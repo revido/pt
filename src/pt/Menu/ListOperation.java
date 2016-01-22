@@ -11,6 +11,6 @@ public class ListOperation implements Operation {
 
     @Override
     public void execute(String[] params) {
-        man.list();
+        man.listTasks();
     }
 }

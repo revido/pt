@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
 
 class Pt {
     private final Manager man;
@@ -34,7 +35,12 @@ class Pt {
             System.out.print("pt> ");
 
             while ((s = in.readLine()) != null) {
-                executeCommand(new Command(s));
+                if(s.equals("help")) {
+                    displayAllCommands();
+                }
+                else {
+                    executeCommand(new Command(s));
+                }
                 System.out.print("pt> ");
             }
 
@@ -42,6 +48,12 @@ class Pt {
             e.printStackTrace();
         }
         man.closeConnection();
+    }
+
+    private void displayAllCommands() {
+        for(Map.Entry<String, Operation> entry : operationList.entrySet()) {
+            System.out.println(entry.getKey());
+        }
     }
 
     // Requires valid non-null command
@@ -63,7 +75,7 @@ class Pt {
         operationList.put("add", new AddOperation(man));
         operationList.put("ls", new ListOperation(man));
         operationList.put("lsh", new ListHistoryOperation(man));
-        operationList.put("undo", new UndoOperation(man));
+        operationList.put("undoChanges", new UndoOperation(man));
         operationList.put("save", new SaveOperation(man));
         operationList.put("done", new FinishOperation(man));
         operationList.put("mark", new MarkOperation(man));
