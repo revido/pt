@@ -11,47 +11,50 @@ import java.util.HashMap;
 class Pt {
     private final Manager man;
     private final ConfigManager confMan;
+    private final HashMap<String, Operation> operationList;
 
+    // Initialization of Pt
     public Pt() {
         shutDownHook();
+
         confMan = new ConfigManager();
         confMan.load();
         man = new Manager(confMan.getConfig());
+
         operationList = new HashMap<>();
         createMenu();
     }
 
-    private final HashMap<String, Operation> operationList;
-
+    // Runs the program menu
     public void runProgram() {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        Operation o;
         String s;
 
-        System.out.print("pt> ");
         try {
-            while (true) {
-                s = in.readLine();
-                if (s == null) {
-                    System.out.println("NULL");
-                    man.closeConnection();
-                    return;
-                }
+            System.out.print("pt> ");
 
-                String[] arguments = s.split(" ");
-                if (operationList.containsKey(arguments[0])) {
-                    o = operationList.get(arguments[0]);
-                    o.execute(arguments);
-                } else if (!arguments[0].equals(""))
-                    System.out.println("Unknown command.");
-
+            while ((s = in.readLine()) != null) {
+                executeCommand(new Command(s));
                 System.out.print("pt> ");
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+        man.closeConnection();
     }
 
+    // Requires valid non-null command
+    // Executes a given command
+    private void executeCommand(Command cmd) {
+        if (operationList.containsKey(cmd.getCommand())) {
+            Operation o = operationList.get(cmd.getCommand());
+            o.execute(cmd.getParams());
+        } else if (!cmd.getCommand().equals(""))
+            System.out.println("Unknown command.");
+    }
+
+    // Creates a HashMap of menu items with their operations
     private void createMenu() {
         operationList.put("start", new StartOperation(man));
         operationList.put("resume", new StartOperation(man));
@@ -72,7 +75,7 @@ class Pt {
         operationList.put("quit", new ExitOperation(man));
     }
 
-    //Used for SIGINT (CTRL + C)
+    // Catches SIGINT (program shutdown) and closes the database
     private void shutDownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
