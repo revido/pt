@@ -18,13 +18,12 @@ public class DBConnector {
             conn = DriverManager.getConnection(dburl, user, pass);
         } catch (SQLException ex) {
             conn = null;
-
-            System.err.println(ex.getMessage());
-            System.err.println("Cannot connect to database ...");
+            System.err.println("Connection to database failed. Database may already be in use.");
+            System.exit(1);
         } catch (ClassNotFoundException ex) {
             conn = null;
-
             System.err.println("Database driver not available ...");
+            System.exit(1);
         }
 
         return conn;

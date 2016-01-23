@@ -35,10 +35,9 @@ class Pt {
             System.out.print("pt> ");
 
             while ((s = in.readLine()) != null) {
-                if(s.equals("help")) {
+                if (s.equals("help")) {
                     displayAllCommands();
-                }
-                else {
+                } else {
                     executeCommand(new Command(s));
                 }
                 System.out.print("pt> ");
@@ -51,7 +50,7 @@ class Pt {
     }
 
     private void displayAllCommands() {
-        for(Map.Entry<String, Operation> entry : operationList.entrySet()) {
+        for (Map.Entry<String, Operation> entry : operationList.entrySet()) {
             System.out.println(entry.getKey());
         }
     }
@@ -92,7 +91,8 @@ class Pt {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                man.closeConnection();
+                if (man != null)
+                    man.closeConnection();
             }
         });
     }
