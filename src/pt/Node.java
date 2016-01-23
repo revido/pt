@@ -33,18 +33,18 @@ class Node {
     private void displayFinishedTasks() {
         String leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
         for (Task t : finishedTasks) {
-            String done = (t.isFinished()) ? "DONE" : "";
+            String done = (t.isDone()) ? "DONE" : "";
             String id = t.getId() == -1 ? "" : Integer.toString(t.getId());
-            System.out.format(leftAlignFormat, done, id, t.getName(), returnMarks(t.getMarks()), t.getNotes());
+            System.out.format(leftAlignFormat, done, id, t.getName(), returnMarks(t.getPomodoros()), t.getNotes());
         }
     }
 
     private void displayUnfinishedTasks() {
         String leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
         for (Task t : unfinishedTasks) {
-            String done = (t.isFinished()) ? "DONE" : "";
+            String done = (t.isDone()) ? "DONE" : "";
             String id = t.getId() == -1 ? "" : Integer.toString(t.getId());
-            System.out.format(leftAlignFormat, done, id, t.getName(), returnMarks(t.getMarks()), t.getNotes());
+            System.out.format(leftAlignFormat, done, id, t.getName(), returnMarks(t.getPomodoros()), t.getNotes());
         }
 
     }

@@ -125,9 +125,9 @@ public class Manager {
         for (Task t : list) {
             pStmt.setTimestamp(1, new java.sql.Timestamp(t.getDate().getTime()));
             pStmt.setInt(2, t.getId());
-            pStmt.setBoolean(3, t.isFinished());
+            pStmt.setBoolean(3, t.isDone());
             pStmt.setString(4, t.getName());
-            pStmt.setInt(5, t.getMarks());
+            pStmt.setInt(5, t.getPomodoros());
             pStmt.setString(6, t.getNotes());
             pStmt.execute();
         }
@@ -136,10 +136,10 @@ public class Manager {
     private boolean isLongBreak() {
         int count = 0;
         for (Task t : tasks.getCurrentState().getFinished()) {
-            count += t.getMarks();
+            count += t.getPomodoros();
         }
         for (Task t : tasks.getCurrentState().getFinished()) {
-            count += t.getMarks();
+            count += t.getPomodoros();
         }
         count++;
 

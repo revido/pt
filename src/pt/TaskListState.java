@@ -22,7 +22,7 @@ class TaskListState {
 
     void add(Task t) {
         saveToHistory();
-        if (t.isFinished())
+        if (t.isDone())
             head.getFinished().add(t);
         else
             head.getUnfinished().add(t);
@@ -63,10 +63,14 @@ class TaskListState {
         Task t1 = head.getUnfinished().get(index1);
         Task t2 = head.getUnfinished().get(index2);
 
-        String tempName = t1.getName();
-        t1.setName(t2.getName());
-        t2.setName(tempName);
+        switchTasks(t1, t2);
         this.changed = true;
+    }
+
+    private void switchTasks(Task t1, Task t2) {
+        Task temp = new Task(t1);
+        t1.to(t2);
+        t2.to(temp);
     }
 
     public void displayCurrentTasks() {

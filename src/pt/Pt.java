@@ -67,23 +67,23 @@ class Pt {
 
     // Creates a HashMap of menu items with their operations
     private void createMenu() {
-        operationList.put("start", new StartOperation(man));
-        operationList.put("resume", new StartOperation(man));
-        operationList.put("timer", new GetTimeOperation(man));
-        operationList.put("t", new GetTimeOperation(man));
         operationList.put("add", new AddOperation(man));
+        operationList.put("done", new FinishOperation(man));
+        operationList.put("exit", new ExitOperation(man));
+        operationList.put("get", new GetTaskOperation(man));
         operationList.put("ls", new ListOperation(man));
         operationList.put("lsh", new ListHistoryOperation(man));
-        operationList.put("undoChanges", new UndoOperation(man));
-        operationList.put("save", new SaveOperation(man));
-        operationList.put("done", new FinishOperation(man));
         operationList.put("mark", new MarkOperation(man));
-        operationList.put("get", new GetTaskOperation(man));
-        operationList.put("switch", new SwitchOperation(man));
+        operationList.put("quit", new ExitOperation(man));
+        operationList.put("resume", new StartOperation(man));
         operationList.put("rm", new RemoveOperation(man));
         operationList.put("rmall", new RemoveAllOperation(man));
-        operationList.put("exit", new ExitOperation(man));
-        operationList.put("quit", new ExitOperation(man));
+        operationList.put("save", new SaveOperation(man));
+        operationList.put("start", new StartOperation(man));
+        operationList.put("switch", new SwitchOperation(man));
+        operationList.put("t", new GetTimeOperation(man));
+        operationList.put("timer", new GetTimeOperation(man));
+        operationList.put("undoChanges", new UndoOperation(man));
     }
 
     // Catches SIGINT (program shutdown) and closes the database
