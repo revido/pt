@@ -2,6 +2,7 @@ package pt;
 
 import pt.config.Config;
 
+import java.io.File;
 import java.io.IOException;
 
 class Pomodoro implements Runnable {
@@ -107,8 +108,14 @@ class Pomodoro implements Runnable {
 
     private void sendMsg(String msg) {
         try {
-            if (config.getAllowMsg())
-                Runtime.getRuntime().exec("/home/alma/.pt.config/alma/pt.sh 'pt.Pomodoro' '" + msg + "' ");
+            if (config.getAllowMsg()) {
+                String heading = "Pomodoro";
+                String fullHeading = "'" + heading + "'";
+                String location = System.getProperty("user.home") + File.separator + ".pt" + File.separator + "send.sh";
+                String run = location + " " + fullHeading + " '" + msg + "'";
+
+                Runtime.getRuntime().exec(run);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
