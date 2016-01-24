@@ -9,9 +9,10 @@ import java.util.ArrayList;
 public class Manager {
 
     private final TaskListState tasks;
-    private boolean changed;
     private final Connection conn;
     private final Config conf;
+    private Thread running;
+    private Pomodoro pp;
 
     public Manager(Config conf) {
         this.conf = conf;
@@ -21,6 +22,7 @@ public class Manager {
         tableExists();
 
         tasks = new TaskListState();
+        queryYesterdaysTasks();
         queryTodayTasks();
     }
 
@@ -31,7 +33,7 @@ public class Manager {
                     " started DATETIME NOT NULL," +
                     " id INT," +
                     " done TINYINT(1)," +
-                    " name VARCHAR(30)," +
+                    " name VARCHAR(100)," +
                     " pomodoros INT," +
                     " notes VARCHAR(255)," +
                     " PRIMARY KEY (rid)" +
@@ -45,6 +47,37 @@ public class Manager {
         }
     }
 
+    // Add yesterdays unfinished tasks
+    private void queryYesterdaysTasks() {
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT started, id, done, name, pomodoros, notes FROM info " +
+                    "WHERE cast(started As DATE)=DATEADD('DAY', -1, CURDATE());";
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            TaskListState yesterday = new TaskListState();
+            while (rs.next()) {
+                Task t = new Task(rs.getTimestamp(1), rs.getInt(2), rs.getBoolean(3),
+                        rs.getString(4), rs.getInt(5), rs.getString(6));
+
+                    yesterday.add(t);
+            }
+
+            for(Task t : yesterday.getCurrentState().getUnfinished()) {
+                tasks.add(t.getName(), t.getNotes(), t.getPomodoros());
+            }
+            stmt.executeUpdate("DELETE FROM info where started=DATEADD('DAY', -1, CURDATE()) AND done=FALSE");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void sendToBack() {
         if (pp.isAlive()) {
             Debugger.log("Sending Thread to background.");
@@ -53,9 +86,6 @@ public class Manager {
             running.start();
         }
     }
-
-    private Thread running;
-    private Pomodoro pp;
 
     public void timer() {
         try {
@@ -148,7 +178,7 @@ public class Manager {
 
     public void saveTodayTasks() {
         try {
-            if (changed) {
+            if (tasks.isChanged()) {
                 Statement stmt = conn.createStatement();
                 String sql = "DELETE FROM info WHERE cast(current_timestamp() As DATE)=CURDATE();";
                 stmt.executeUpdate(sql);
@@ -159,7 +189,8 @@ public class Manager {
                 System.out.println("Saved.");
             } else
                 System.out.println("No changes made.");
-            changed = false;
+
+            tasks.saved();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -179,12 +210,12 @@ public class Manager {
         addToHistory();
         getCurrentTask().finish();
         tasks.add(getCurrentTask());
-        tasks.remove(0);
+        tasks.remove(getCurrentTask());
 
         for (Task t : tasks.getCurrentState().getUnfinished()) {
             t.setId(t.getId() - 1);
         }
-        this.changed = true;
+        tasks.change();
     }
 
     public void showCurrentTask() {

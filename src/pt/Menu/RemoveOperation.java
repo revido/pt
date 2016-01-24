@@ -12,7 +12,7 @@ public class RemoveOperation implements Operation {
     @Override
     public void execute(String[] params) {
         try {
-            this.man.remove(Integer.parseInt(params[1]));
+            this.man.remove(Integer.parseInt(params[0]));
         } catch (Exception e) {
             System.err.println("No or incorrect values specified.");
         }

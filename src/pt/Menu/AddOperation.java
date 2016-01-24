@@ -32,6 +32,11 @@ public class AddOperation implements Operation {
                 s = s.trim();
                 n = n.trim();
 
+                if(s.length() > 100) {
+                    System.out.println("Please use a name that is less than 100 characters long.");
+                    return;
+                }
+
                 man.add(s, n);
             }
         } catch (Exception e) {

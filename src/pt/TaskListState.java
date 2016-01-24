@@ -1,5 +1,7 @@
 package pt;
 
+import java.util.Date;
+
 class TaskListState {
 
     private Node head;
@@ -22,16 +24,21 @@ class TaskListState {
 
     void add(Task t) {
         saveToHistory();
+
         if (t.isDone())
             head.getFinished().add(t);
         else
             head.getUnfinished().add(t);
-
         changed = true;
     }
 
     void add(String name, String notes) {
         add(new Task(head.getUnfinished().size() + 1, name, notes));
+    }
+
+    //Only used for yesterdays tasks
+    public void add(String name, String notes, int pomodoros) {
+        add(new Task(new Date(), head.getUnfinished().size() + 1, false, name, pomodoros, notes));
     }
 
     public void remove(int id) {
@@ -46,6 +53,10 @@ class TaskListState {
             }
         }
         changed = true;
+    }
+
+    public void remove(Task t) {
+        head.getUnfinished().remove(t);
     }
 
     public void removeAllTasks() {
@@ -101,5 +112,9 @@ class TaskListState {
 
     public void change() {
         changed = true;
+    }
+
+    public void saved() {
+        changed = false;
     }
 }
