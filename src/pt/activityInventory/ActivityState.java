@@ -1,21 +1,20 @@
 package pt.activityInventory;
 
-import pt.Node;
-import pt.Task;
-
-import java.util.Date;
+import pt.TaskListState;
 
 class ActivityState {
 
     private Node head;
+    private TaskListState state;
     private boolean changed;
 
-    public ActivityState() {
+    public ActivityState(TaskListState state) {
         head = Node.empty();
+        this.state = state;
     }
 
     public void saveToHistory() {
-        Node toAdd = new Node(head.getFinished(), head.getUnfinished());
+        Node toAdd = new Node(head.getActTasks());
 
         if (head == null) {
             head = new Node(toAdd);
@@ -25,48 +24,39 @@ class ActivityState {
         }
     }
 
-    void add(Task t) {
+    void add(ActivityTask t) {
         saveToHistory();
 
-        if (t.isDone())
-            head.getFinished().add(t);
-        else
-            head.getUnfinished().add(t);
+        head.getActTasks().add(t);
         changed = true;
     }
 
-    void add(String name, String notes) {
-        add(new Task(head.getUnfinished().size() + 1, name, notes));
+    void add(ActivityUnplanned unp, String name, int effort) {
+        add(new ActivityTask(getNextId(), unp, name, effort));
     }
 
-    //Only used for yesterdays tasks
-    public void add(String name, String notes, int pomodoros) {
-        add(new Task(new Date(), head.getUnfinished().size() + 1, false, name, pomodoros, notes));
+    private int getNextId() {
+        return head.getActTasks().size()+1;
     }
 
     public void remove(int id) {
         saveToHistory();
-        for (int i = 0; i < head.getUnfinished().size(); i++) {
-            Task t = head.getUnfinished().get(i);
+        for (int i = 0; i < head.getActTasks().size(); i++) {
+            ActivityTask t = head.getActTasks().get(i);
             if (t.getId() == id) {
-                head.getUnfinished().remove(i);
-                if (i < head.getUnfinished().size()) {
-                    head.getUnfinished().get(i).setId(head.getUnfinished().get(i).getId() - 1);
+                head.getActTasks().remove(i);
+                if (i < head.getActTasks().size()) {
+                    head.getActTasks().get(i).setId(head.getActTasks().get(i).getId() - 1);
                 }
             }
         }
         changed = true;
     }
 
-    public void remove(Task t) {
-        head.getUnfinished().remove(t);
-    }
-
     public void removeAllTasks() {
         saveToHistory();
         this.changed = true;
-        head.getUnfinished().clear();
-        head.getFinished().clear();
+        head.getActTasks().clear();
     }
 
     public void switchPos(int i, int i1) {
@@ -74,15 +64,15 @@ class ActivityState {
         int index1 = i - 1;
         int index2 = i1 - 1;
 
-        Task t1 = head.getUnfinished().get(index1);
-        Task t2 = head.getUnfinished().get(index2);
+        ActivityTask t1 = head.getActTasks().get(index1);
+        ActivityTask t2 = head.getActTasks().get(index2);
 
         switchTasks(t1, t2);
         this.changed = true;
     }
 
-    private void switchTasks(Task t1, Task t2) {
-        Task temp = new Task(t1);
+    private void switchTasks(ActivityTask t1, ActivityTask t2) {
+        ActivityTask temp = new ActivityTask(t1);
         t1.to(t2);
         t2.to(temp);
     }
@@ -98,6 +88,12 @@ class ActivityState {
             temp.displayTasks();
             temp = temp.getNext();
             System.out.println();
+        }
+    }
+
+    public void importToPt() {
+        for(ActivityTask t : head.getActTasks()) {
+            state.add(t.getName(), t.getInfo(), t.getEffort());
         }
     }
 
@@ -120,4 +116,5 @@ class ActivityState {
     public void saved() {
         changed = false;
     }
+
 }

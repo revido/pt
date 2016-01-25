@@ -1,8 +1,12 @@
 package pt;
 
+import pt.activityInventory.ActivityUnplanned;
+
 import java.util.Date;
 
 class Task {
+    private final int expectedPomodorso;
+    private final ActivityUnplanned unp;
     private Date date;
     private int id, pomodoros;
     private boolean done;
@@ -13,6 +17,8 @@ class Task {
         this.name = name;
         this.notes = notes;
         this.date = new Date();
+        expectedPomodorso = 0;
+        unp = null;
     }
 
     public Task(Date date, int id, boolean done, String name, int pomodoros, String notes) {
@@ -24,6 +30,15 @@ class Task {
 
     public Task(Task t) {
         this(t.getDate(), t.getId(), t.isDone(), t.getName(), t.getPomodoros(), t.getNotes());
+    }
+
+    //Used for importing activity tasks
+    public Task(int i, boolean b, String name, int effort, ActivityUnplanned unp) {
+        this.date = new Date();
+        this.done = b;
+        this.name = name;
+        this.expectedPomodorso = effort;
+        this.unp = unp;
     }
 
     public void addMark() {

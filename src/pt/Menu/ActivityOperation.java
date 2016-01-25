@@ -1,16 +1,22 @@
 package pt.Menu;
 
 import pt.Manager;
+import pt.TaskListState;
+import pt.activityInventory.ActivityManager;
+
+import java.io.BufferedReader;
 
 public class ActivityOperation implements Operation {
-    private final Manager man;
+    BufferedReader in;
+    TaskListState state;
 
-    public ActivityOperation(Manager man) {
-        this.man = man;
+    public ActivityOperation(BufferedReader in, TaskListState state) {
+        this.in = in;
     }
 
     @Override
     public void execute(String[] params) {
-        man.launchActivityEditor();
+        ActivityManager actMan = new ActivityManager();
+        actMan.run(state);
     }
 }

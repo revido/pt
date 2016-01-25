@@ -249,6 +249,10 @@ public class Manager {
         tasks.displayHistory();
     }
 
+    public TaskListState getState() {
+        return tasks;
+    }
+
     public void showTime() {
         if (pp == null) {
             System.out.println("No timer");

@@ -3,57 +3,50 @@ package pt.activityInventory;
 import java.util.Date;
 
 class ActivityTask {
-    private Date date;
-    private int id, pomodoros;
-    private boolean done;
-    private String name, notes;
+    private final ActivityUnplanned unp;
+    private Date deadLine;
+    private int pomodoros;
+    private String name, info;
+    private int id;
 
-    public ActivityTask(int id, String name, String notes) {
+    public ActivityTask(int id, ActivityUnplanned unp, String name, int effort) {
         this.id = id;
+        this.unp = unp;
         this.name = name;
-        this.notes = notes;
-        this.date = new Date();
-    }
-
-    public ActivityTask(Date date, int id, boolean done, String name, int pomodoros, String notes) {
-        this(id, name, notes);
-        this.date = date;
-        this.done = done;
-        this.pomodoros = pomodoros;
+        this.pomodoros = effort;
     }
 
     public ActivityTask(ActivityTask t) {
-        this(t.getDate(), t.getId(), t.isDone(), t.getName(), t.getPomodoros(), t.getNotes());
-    }
-
-    public void addMark() {
-        pomodoros++;
-    }
-
-    public void finish() {
-        this.done = true;
-        this.id = -1;
+        this(t.getId(), t.getUnplanned(), t.getName(), t.getEffort());
     }
 
     public void to(ActivityTask t2) {
-        this.date = t2.getDate();
+        this.deadLine = t2.getDeadLine();
         this.pomodoros = t2.getPomodoros();
-        this.done = t2.isDone();
         this.name = t2.getName();
-        this.notes = t2.getNotes();
+        this.info = t2.getInfo();
     }
 
     public String getName() { return this.name; }
-    public String getNotes() { return notes; }
-    public boolean isDone() {
-        return this.done;
-    }
+    public String getInfo() { return info; }
     public int getPomodoros() {
         return this.pomodoros;
     }
-    public int getId() { return this.id; }
+    public Date getDeadLine() { return deadLine; }
+
+    public int getEffort() {
+        return pomodoros;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
-    public Date getDate() { return date; }
+
+    public ActivityUnplanned getUnplanned() {
+        return unp;
+    }
 }

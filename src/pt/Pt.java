@@ -15,6 +15,7 @@ class Pt {
     private final ActivityManager actMan;
     private final ConfigManager confMan;
     private final HashMap<String, Operation> operationList;
+    BufferedReader in;
 
     // Initialization of Pt
     public Pt() {
@@ -27,11 +28,11 @@ class Pt {
 
         operationList = new HashMap<>();
         createMenu();
+        in = new BufferedReader(new InputStreamReader(System.in));
     }
 
     // Runs the program menu
     public void runProgram() {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String s;
 
         try {
@@ -71,8 +72,8 @@ class Pt {
     // Creates a HashMap of menu items with their operations
     private void createMenu() {
         operationList.put("add", new AddOperation(man));
-        operationList.put("activity", new ActivityOperation());
-        operationList.put("act", new ActivityOperation(man));
+        operationList.put("activity", new ActivityOperation(in, man.getState()));
+        operationList.put("act", new ActivityOperation(in, man.getState()));
         operationList.put("done", new FinishOperation(man));
         operationList.put("exit", new ExitOperation(man));
         operationList.put("get", new GetTaskOperation(man));

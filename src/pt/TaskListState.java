@@ -1,8 +1,10 @@
 package pt;
 
+import pt.activityInventory.ActivityUnplanned;
+
 import java.util.Date;
 
-class TaskListState {
+public class TaskListState {
 
     private Node head;
     private boolean changed;
@@ -39,6 +41,11 @@ class TaskListState {
     //Only used for yesterdays tasks
     public void add(String name, String notes, int pomodoros) {
         add(new Task(new Date(), head.getUnfinished().size() + 1, false, name, pomodoros, notes));
+    }
+
+    //Used for adding activity tasks
+    public void add(String name, ActivityUnplanned unp, int effort) {
+        add(new Task(head.getUnfinished().size() + 1, false, name, effort, unp));
     }
 
     public void remove(int id) {
