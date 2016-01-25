@@ -14,13 +14,11 @@ public class Manager {
     private final Config conf;
     private Thread running;
     private Pomodoro pp;
-    ActivityManager actMan;
 
-    public Manager(Config conf, ActivityManager actMan) {
+    public Manager(Config conf) {
         this.conf = conf;
         Debugger.debug = conf.getDebug();
         Debugger.log("Initializing pt.Manager.");
-        this.actMan = actMan;
         conn = DBConnector.getConnection();
         tableExists();
 

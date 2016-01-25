@@ -18,4 +18,9 @@ public class ActivityUnplanned {
     public Date getUntil() {
         return until;
     }
+
+    @Override
+    public String toString() {
+        return (unplanned) ? "U" : "" + " " + until.toString();
+    }
 }

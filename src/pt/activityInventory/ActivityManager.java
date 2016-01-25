@@ -8,7 +8,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ActivityManager {
-    public void run(TaskListState state) {
+    private final TaskListState state;
+
+    public ActivityManager (TaskListState state) {
+        this.state = state;
+    }
+    public void run() {
         String s;
         ActivityState act = new ActivityState(state);
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -39,6 +44,7 @@ public class ActivityManager {
                             break;
                         case "import":
                             act.importToPt();
+                            break;
                         default:
                             System.out.println("Unknown command.");
                             break;

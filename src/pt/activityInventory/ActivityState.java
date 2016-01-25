@@ -93,7 +93,7 @@ class ActivityState {
 
     public void importToPt() {
         for(ActivityTask t : head.getActTasks()) {
-            state.add(t.getName(), t.getInfo(), t.getEffort());
+            state.add(t.getName(), t.getUnplanned(), t.getEffort());
         }
     }
 

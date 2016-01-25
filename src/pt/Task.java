@@ -34,11 +34,17 @@ class Task {
 
     //Used for importing activity tasks
     public Task(int i, boolean b, String name, int effort, ActivityUnplanned unp) {
+        this.id = i;
         this.date = new Date();
         this.done = b;
         this.name = name;
         this.expectedPomodorso = effort;
         this.unp = unp;
+//        if (unp == null) {
+//            notes = "";
+//        } else
+//            this.notes = unp.toString();
+        this.notes = "";
     }
 
     public void addMark() {
@@ -58,17 +64,31 @@ class Task {
         this.notes = t2.getNotes();
     }
 
-    public String getName() { return this.name; }
-    public String getNotes() { return notes; }
+    public String getName() {
+        return this.name;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
     public boolean isDone() {
         return this.done;
     }
+
     public int getPomodoros() {
         return this.pomodoros;
     }
-    public int getId() { return this.id; }
+
+    public int getId() {
+        return this.id;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
-    public Date getDate() { return date; }
+
+    public Date getDate() {
+        return date;
+    }
 }
