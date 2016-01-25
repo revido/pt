@@ -168,7 +168,7 @@ public class Manager {
 
     private boolean isLongBreak() {
         int count = 0;
-        for (Task t : tasks.getCurrentState().getFinished()) {
+        for (Task t : tasks.getCurrentState().getUnfinished()) {
             count += t.getPomodoros();
         }
         for (Task t : tasks.getCurrentState().getFinished()) {
