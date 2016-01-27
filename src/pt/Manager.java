@@ -29,7 +29,9 @@ public class Manager {
 
     private void tableExists() {
         try {
-            String create = "CREATE TABLE IF NOT EXISTS info (" +
+            Statement stmt = conn.createStatement();
+
+            String createInfo = "CREATE TABLE IF NOT EXISTS info (" +
                     " rid INT NOT NULL AUTO_INCREMENT," +
                     " started DATETIME NOT NULL," +
                     " id INT," +
@@ -40,8 +42,18 @@ public class Manager {
                     " PRIMARY KEY (rid)" +
                     ");";
 
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(create);
+
+            String createActivity= "CREATE TABLE IF NOT EXISTS activity_inventory(" +
+                    " rid INT NOT NULL AUTO_INCREMENT," +
+                    " name VARCHAR(100)," +
+                    " effort INT," +
+                    " until DATETIME," +
+                    " PRIMARY KEY (rid)" +
+                    ");";
+
+            stmt.executeUpdate(createInfo);
+            stmt.executeUpdate(createActivity);
+
         } catch (SQLException e) {
             e.printStackTrace();
             closeConnection();
@@ -61,10 +73,10 @@ public class Manager {
                 Task t = new Task(rs.getTimestamp(1), rs.getInt(2), rs.getBoolean(3),
                         rs.getString(4), rs.getInt(5), rs.getString(6));
 
-                    yesterday.add(t);
+                yesterday.add(t);
             }
 
-            for(Task t : yesterday.getCurrentState().getUnfinished()) {
+            for (Task t : yesterday.getCurrentState().getUnfinished()) {
                 tasks.add(t.getName(), t.getNotes(), t.getPomodoros());
             }
             stmt.executeUpdate("DELETE FROM info where started=DATEADD('DAY', -1, CURDATE()) AND done=FALSE");
