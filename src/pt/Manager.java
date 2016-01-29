@@ -1,11 +1,9 @@
 package pt;
 
-import pt.activityInventory.ActivityManager;
 import pt.config.Config;
 import pt.dbs.DBConnector;
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class Manager {
 

@@ -1,7 +1,6 @@
 package pt;
 
 import pt.Menu.*;
-import pt.activityInventory.ActivityManager;
 import pt.config.ConfigManager;
 
 import java.io.BufferedReader;
@@ -12,7 +11,6 @@ import java.util.Map;
 
 class Pt {
     private final Manager man;
-    private final ActivityManager actMan;
     private final ConfigManager confMan;
     private final HashMap<String, Operation> operationList;
     BufferedReader in;
@@ -24,7 +22,6 @@ class Pt {
         confMan = new ConfigManager();
         confMan.load();
         man = new Manager(confMan.getConfig());
-        actMan = new ActivityManager(man.getState());
 
         operationList = new HashMap<>();
         createMenu();
@@ -72,8 +69,8 @@ class Pt {
     // Creates a HashMap of menu items with their operations
     private void createMenu() {
         operationList.put("add", new AddOperation(man));
-        operationList.put("activity", new ActivityOperation(actMan));
-        operationList.put("act", new ActivityOperation(actMan));
+//        operationList.put("activity", new ActivityOperation(actMan));
+//        operationList.put("act", new ActivityOperation(actMan));
         operationList.put("done", new FinishOperation(man));
         operationList.put("exit", new ExitOperation(man));
         operationList.put("get", new GetTaskOperation(man));

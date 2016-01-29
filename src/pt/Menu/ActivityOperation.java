@@ -1,9 +1,6 @@
 package pt.Menu;
 
-import pt.TaskListState;
 import pt.activityInventory.ActivityManager;
-
-import java.io.BufferedReader;
 
 public class ActivityOperation implements Operation {
     ActivityManager actMan;
