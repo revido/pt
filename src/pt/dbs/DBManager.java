@@ -2,7 +2,6 @@ package pt.dbs;
 
 import pt.taskManagement.LinkedTaskDone;
 import pt.taskManagement.Task;
-import pt.taskManagement.TodoManager;
 import pt.taskManagement.TodoTask;
 
 import java.sql.*;
@@ -10,7 +9,7 @@ import java.sql.*;
 // This class makes queries to the H2 database
 public class DBManager {
 
-    Connection conn;
+    private final Connection conn;
 
     public DBManager(Connection conn) {
         shutDownHook();
@@ -36,7 +35,7 @@ public class DBManager {
                     " rid INT NOT NULL AUTO_INCREMENT," +
                     " started DATETIME NOT NULL," +
                     " id INT," +
-                    " done TINYINT(1)," +
+                    " done TINYINT," +
                     " name VARCHAR(100)," +
                     " pomodoros INT," +
                     " notes VARCHAR(255)," +
@@ -154,7 +153,7 @@ public class DBManager {
     }
 
     // Closes the database connection
-    public void closeConnection() {
+    private void closeConnection() {
         try {
             if (conn != null) conn.close();
         } catch (Exception e) {

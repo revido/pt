@@ -9,13 +9,13 @@ public abstract class Task {
     private int pomodoros;
     private String name;
     private String note;
-    private Date date;
+    private final Date date;
 
     private Task next;
 
     // name, note != null && name != ""
     // Creates a task. if "unplanned" is true then this task is unplanned & urgent
-    public Task(String name, String notes, int pomodoros) {
+    Task(String name, String notes, int pomodoros) {
         this.name = name;
         this.note = notes;
         this.pomodoros = pomodoros;
@@ -28,6 +28,13 @@ public abstract class Task {
         this.pomodoros = t.getPomodoros();
         this.next = t.getNext();
         this.date = t.getDate();
+    }
+
+    Task(String name, String note, int pomodoros, Date date) {
+        this.name = name;
+        this.note = note;
+        this.pomodoros = pomodoros;
+        this.date = date;
     }
 
     // Returns the name of the task

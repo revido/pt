@@ -1,6 +1,5 @@
 package pt.taskManagement;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 // Represents a a time-trackable task
@@ -20,7 +19,7 @@ public class TodoTask extends Task {
 
     // Import task from Database
     public TodoTask(Date date, String name, int pomodoros, String note) {
-        super(name, note, pomodoros);
+        super(name, note, pomodoros, date);
     }
 
     // Adds another pomodoro, meaning that the timer finished

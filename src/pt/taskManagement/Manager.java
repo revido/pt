@@ -2,7 +2,7 @@ package pt.taskManagement;
 
 public abstract class Manager {
     Task head;
-    Task tail;
+    private Task tail;
 
     private boolean changed;
 
@@ -37,6 +37,8 @@ public abstract class Manager {
             }
 
             prev.setNext(temp.getNext());
+            if(head.getNext() == null)
+                tail = head;
         }
         changed = true;
     }
@@ -110,7 +112,7 @@ public abstract class Manager {
 
     // 0 < id <= last_id
     // Returns the task from the given id
-    protected Task getTaskFromId(int id) {
+    Task getTaskFromId(int id) {
         int count = id;
 
         Task temp = head;

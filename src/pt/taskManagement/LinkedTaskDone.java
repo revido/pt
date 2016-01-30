@@ -1,11 +1,10 @@
 package pt.taskManagement;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 // Represents a a time-trackable task
 public class LinkedTaskDone extends Task {
-    private Date date;
+    private final Date date;
 
     // name, note != null && name != ""
     // Creates a finished task

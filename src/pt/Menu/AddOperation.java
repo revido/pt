@@ -1,6 +1,5 @@
 package pt.Menu;
 
-import pt.PtManager;
 import pt.taskManagement.TodoManager;
 
 import java.util.Scanner;

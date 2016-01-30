@@ -10,19 +10,18 @@ import java.sql.*;
 
 public class PtManager {
 
-    private final Connection conn;
     private final Config conf;
     private final DBManager dbMan;
     private Thread running;
     private Pomodoro pp;
-    private TodoManager todoMan;
+    private final TodoManager todoMan;
 
     public PtManager(Config conf) {
         this.conf = conf;
         Debugger.debug = conf.getDebug();
         Debugger.log("Initializing PtManager");
 
-        conn = DBConnector.getConnection();
+        Connection conn = DBConnector.getConnection();
         dbMan = new DBManager(conn);
 
         todoMan = new TodoManager();

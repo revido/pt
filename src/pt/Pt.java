@@ -5,12 +5,11 @@ import pt.config.ConfigManager;
 
 class Pt {
 
-    Menu menu;
-    ConfigManager confMan;
+    private final Menu menu;
 
     // Initialization of Pt
     public Pt() {
-        confMan = new ConfigManager();
+        ConfigManager confMan = new ConfigManager();
         confMan.load();
         menu = new Menu(confMan);
     }

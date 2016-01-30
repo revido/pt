@@ -2,7 +2,7 @@ package pt.Menu;
 
 import java.util.Arrays;
 
-public class Command {
+class Command {
     private String command;
     private String[] params;
 

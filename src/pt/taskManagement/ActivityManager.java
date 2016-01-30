@@ -1,6 +1,6 @@
 package pt.taskManagement;
 
-public class ActivityManager extends Manager {
+class ActivityManager extends Manager {
     // name, notes != null && !name.equals("")
     // Adds a Task to the end of the list
     public void add(String name, String notes, int pomodoros, boolean unplanned) {

@@ -12,7 +12,6 @@ class Pomodoro implements Runnable {
     private int time;
 
     private boolean continuous;
-    private Thread keyListenerThread;
     private final boolean isLongBreak;
     private boolean onWork;
     private final Config config;
@@ -34,7 +33,7 @@ class Pomodoro implements Runnable {
 
     private void start() {
         Debugger.log("Thread started");
-        keyListenerThread = new Thread(new KeyListener(Thread.currentThread()));
+        Thread keyListenerThread = new Thread(new KeyListener(Thread.currentThread()));
         keyListenerThread.start();
 
         try {

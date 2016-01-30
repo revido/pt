@@ -1,5 +1,5 @@
 package pt.Menu;
 
-public interface Operation {
+interface Operation {
     void execute(String[] params);
 }

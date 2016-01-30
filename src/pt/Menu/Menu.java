@@ -9,9 +9,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class Menu {
-    private HashMap<String, Operation> operationList;
-    PtManager man;
-    BufferedReader in;
+    private final HashMap<String, Operation> operationList;
+    private final PtManager man;
+    private final BufferedReader in;
 
     public Menu(ConfigManager confMan) {
         man = new PtManager(confMan.getConfig());
@@ -50,7 +50,7 @@ public class Menu {
 
     // Requires valid non-null command
     // Executes a given command
-    public void executeCommand(Command cmd) {
+    private void executeCommand(Command cmd) {
         if (operationList.containsKey(cmd.getCommand())) {
             Operation o = operationList.get(cmd.getCommand());
             o.execute(cmd.getParams());

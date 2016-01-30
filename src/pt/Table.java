@@ -3,8 +3,6 @@ package pt;
 import pt.taskManagement.LinkedTaskDone;
 import pt.taskManagement.TodoTask;
 
-import java.util.ArrayList;
-
 public class Table {
 
     public void displayTasks(TodoTask t, LinkedTaskDone d) {

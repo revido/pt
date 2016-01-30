@@ -2,7 +2,7 @@ package pt.taskManagement;
 
 // Represents a task in the Activity Inventory. These taska are not trackable.
 // Their purpose is to schedule todays tasks and to estimate their effort of completion.
-public class ActivityTask extends Task{
+class ActivityTask extends Task{
     private boolean unplanned;
 
     // name, note != null && name != "" && pomodoros >= 0
@@ -34,7 +34,7 @@ public class ActivityTask extends Task{
 //    }
 
     // Returns true if this particulat task is an unplanned & urgent task
-    public boolean getUnplanned() { return unplanned; }
+    private boolean getUnplanned() { return unplanned; }
 
     // Reset the unplanned & urgent option
     public void setUnplanned(boolean unplanned) { this.unplanned = unplanned; }
