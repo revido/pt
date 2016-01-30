@@ -12,5 +12,6 @@ public class ActivityManager extends Manager {
         ActivityTask t = (ActivityTask) getTaskFromId(id);
 
         t.setUnplanned(unplanned);
+        super.setChanged(false);
     }
 }

@@ -4,6 +4,8 @@ public abstract class Manager {
     Task head;
     Task tail;
 
+    private boolean changed;
+
     // t != null
     // Adds the task to the end of the list
     public void add(Task t) {
@@ -14,6 +16,7 @@ public abstract class Manager {
             tail.setNext(t);
             tail = t;
         }
+        changed = true;
     }
 
     // id > 0 && id <= last_id
@@ -35,6 +38,7 @@ public abstract class Manager {
 
             prev.setNext(temp.getNext());
         }
+        changed = true;
     }
 
     // Switch position of two tasks in the todo list
@@ -79,6 +83,7 @@ public abstract class Manager {
             }
 
         }
+        changed = true;
     }
 
     // 0 < id <= last_id && name != null && !name.equals("")
@@ -89,6 +94,7 @@ public abstract class Manager {
         } catch (NullPointerException e) {
             System.err.println("ID does not exist.");
         }
+        changed = true;
     }
 
     // 0 < id <= last_id && name != null && !name.equals("")
@@ -99,6 +105,7 @@ public abstract class Manager {
         } catch (NullPointerException e) {
             System.err.println("ID does not exist.");
         }
+        changed = true;
     }
 
     // 0 < id <= last_id
@@ -116,11 +123,53 @@ public abstract class Manager {
         return temp;
     }
 
+    public Task getTask() {
+        return head;
+    }
+
     @Override
     public String toString() {
         if (head != null)
             return head.toString();
 
         return "";
+    }
+
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean b) {
+        this.changed = b;
+    }
+
+    public void add(String name, String note, int pos) {
+        Task t = new TodoTask(name, note, 0);
+        if (pos == -1)
+            this.add(t);
+        else {
+            if (head != null) {
+                Task prev = null;
+                Task temp = head;
+                while (temp != null) {
+                    if (pos == 1) {
+                        if (prev == null) {
+                            t.setNext(head);
+                            head = t;
+                        } else {
+                            t.setNext(prev.getNext());
+                            prev.setNext(t);
+                        }
+                        break;
+                    }
+                    prev = temp;
+                    temp = temp.getNext();
+                    pos--;
+                }
+                if (temp == null) {
+                    add(t);
+                }
+            }
+        }
     }
 }

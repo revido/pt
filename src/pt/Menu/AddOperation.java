@@ -1,46 +1,32 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
+import pt.taskManagement.TodoManager;
+
+import java.util.Scanner;
 
 public class AddOperation implements Operation {
-    private final Manager man;
+    private final TodoManager man;
 
-    public AddOperation(Manager man) {
+    public AddOperation(TodoManager man) {
         this.man = man;
     }
 
     @Override
     public void execute(String[] params) {
-        try {
-            if (params.length == 0) {
-                System.err.println("No or incorrect values specified.");
-            } else {
-                String s = "";
-                String n = "";
-                Boolean notes = false;
-                for (String param : params) {
-                    if (param.equals("-n")) {
-                        notes = true;
-                        continue;
-                    }
+        Scanner scanner = new Scanner(System.in);
 
-                    if (notes) {
-                        n += param + " ";
-                    } else
-                        s += param + " ";
-                }
-                s = s.trim();
-                n = n.trim();
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
 
-                if(s.length() > 100) {
-                    System.out.println("Please use a name that is less than 100 characters long.");
-                    return;
-                }
+        System.out.print("Position [last]: ");
+        String s = scanner.nextLine();
+        int pos = s.equals("") ? -1 : Integer.parseInt(s);
 
-                man.add(s, n);
-            }
-        } catch (Exception e) {
-            System.err.println("No or incorrect values specified.");
-        }
+        System.out.print("Note [empty]: ");
+        String note = scanner.nextLine();
+
+        man.add(name, note, pos);
     }
+
 }

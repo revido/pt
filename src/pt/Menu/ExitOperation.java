@@ -1,15 +1,15 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ExitOperation implements Operation {
-    private final Manager man;
+    private final PtManager man;
 
-    public ExitOperation(Manager man) {
+    public ExitOperation(PtManager man) {
         this.man = man;
     }
 
@@ -21,7 +21,7 @@ public class ExitOperation implements Operation {
                 System.out.print("Save changes?\n[Y/N]> ");
                 String ans = in.readLine();
                 if (ans.equals("Y") || ans.equals("y")) {
-                    man.saveTodayTasks();
+                    man.saveTasks();
                 }
             }
             System.exit(0);

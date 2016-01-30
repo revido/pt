@@ -1,13 +1,14 @@
 package pt;
 
 import pt.config.Config;
+import pt.taskManagement.TodoTask;
 
 import java.io.File;
 import java.io.IOException;
 
 class Pomodoro implements Runnable {
 
-    private final Task currentTask;
+    private final TodoTask currentTask;
     private int time;
 
     private boolean continuous;
@@ -17,7 +18,7 @@ class Pomodoro implements Runnable {
     private final Config config;
 
 
-    public Pomodoro(boolean isLongBreak, Task currentTask, Config config) {
+    public Pomodoro(boolean isLongBreak, TodoTask currentTask, Config config) {
         this.config = config;
         time = config.getPomodoro();
 

@@ -1,11 +1,12 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
+import pt.taskManagement.TodoManager;
 
 public class RemoveOperation implements Operation {
-    private final Manager man;
+    private final TodoManager man;
 
-    public RemoveOperation(Manager man) {
+    public RemoveOperation(TodoManager man) {
         this.man = man;
     }
 

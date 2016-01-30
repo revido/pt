@@ -1,11 +1,11 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
 
 public class StartOperation implements Operation {
-    private final Manager man;
+    private final PtManager man;
 
-    public StartOperation(Manager man) {
+    public StartOperation(PtManager man) {
         this.man = man;
     }
 

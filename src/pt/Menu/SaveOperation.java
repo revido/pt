@@ -1,16 +1,16 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
 
 public class SaveOperation implements Operation {
-    private final Manager man;
+    private final PtManager man;
 
-    public SaveOperation(Manager man) {
+    public SaveOperation(PtManager man) {
         this.man = man;
     }
 
     @Override
     public void execute(String[] params) {
-        man.saveTodayTasks();
+        man.saveTasks();
     }
 }

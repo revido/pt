@@ -1,11 +1,12 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
+import pt.taskManagement.TodoManager;
 
 public class MarkOperation implements Operation {
-    private final Manager man;
+    private final TodoManager man;
 
-    public MarkOperation(Manager man) {
+    public MarkOperation(TodoManager man) {
         this.man = man;
     }
 

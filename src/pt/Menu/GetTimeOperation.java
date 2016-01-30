@@ -1,11 +1,11 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
 
 public class GetTimeOperation implements Operation {
-    private final Manager man;
+    private final PtManager man;
 
-    public GetTimeOperation(Manager man) {
+    public GetTimeOperation(PtManager man) {
         this.man = man;
     }
 

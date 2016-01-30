@@ -1,11 +1,12 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
+import pt.taskManagement.TodoManager;
 
 public class FinishOperation implements Operation {
-    private final Manager man;
+    private final TodoManager man;
 
-    public FinishOperation(Manager man) {
+    public FinishOperation(TodoManager man) {
         this.man = man;
     }
 

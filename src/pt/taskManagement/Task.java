@@ -1,5 +1,7 @@
 package pt.taskManagement;
 
+import java.util.Date;
+
 // Provides basic information for sub-tasks.
 // Tasks are linked to each other which also acts as a prioritized completion list
 public abstract class Task {
@@ -7,6 +9,7 @@ public abstract class Task {
     private int pomodoros;
     private String name;
     private String note;
+    private Date date;
 
     private Task next;
 
@@ -16,6 +19,7 @@ public abstract class Task {
         this.name = name;
         this.note = notes;
         this.pomodoros = pomodoros;
+        this.date = new Date();
     }
 
     public Task(Task t) {
@@ -23,6 +27,7 @@ public abstract class Task {
         this.note = t.getNote();
         this.pomodoros = t.getPomodoros();
         this.next = t.getNext();
+        this.date = t.getDate();
     }
 
     // Returns the name of the task
@@ -75,5 +80,9 @@ public abstract class Task {
             s += "\r\n" + next.toString();
 
         return s;
+    }
+
+    public Date getDate() {
+        return date;
     }
 }

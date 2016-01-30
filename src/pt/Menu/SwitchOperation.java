@@ -1,11 +1,12 @@
 package pt.Menu;
 
-import pt.Manager;
+import pt.PtManager;
+import pt.taskManagement.TodoManager;
 
 public class SwitchOperation implements Operation {
-    private final Manager man;
+    private final TodoManager man;
 
-    public SwitchOperation(Manager man) {
+    public SwitchOperation(TodoManager man ) {
         this.man = man;
     }
 
