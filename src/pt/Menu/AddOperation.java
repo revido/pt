@@ -13,19 +13,23 @@ public class AddOperation implements Operation {
 
     @Override
     public void execute(String[] params) {
-        Scanner scanner = new Scanner(System.in);
+        if (params.length == 1) {
+            man.add(params[0], "", -1);
+        } else {
+            Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Name: ");
-        String name = scanner.nextLine();
+            System.out.print("Name: ");
+            String name = scanner.nextLine();
 
-        System.out.print("Position [last]: ");
-        String s = scanner.nextLine();
-        int pos = s.equals("") ? -1 : Integer.parseInt(s);
+            System.out.print("Position [last]: ");
+            String s = scanner.nextLine();
+            int pos = s.equals("") ? -1 : Integer.parseInt(s);
 
-        System.out.print("Note [empty]: ");
-        String note = scanner.nextLine();
+            System.out.print("Note [empty]: ");
+            String note = scanner.nextLine();
 
-        man.add(name, note, pos);
+            man.add(name, note, pos);
+        }
     }
 
 }

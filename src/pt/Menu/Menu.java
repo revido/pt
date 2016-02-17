@@ -41,11 +41,17 @@ public class Menu {
             e.printStackTrace();
         }
     }
-
+/*
+    // doesnt work on java 1.7
     private void displayAllCommands() {
         for (HashMap.Entry<String, Operation> entry : operationList.entrySet()) {
             System.out.println(entry.getKey());
         }
+    }
+    */
+
+    private void displayAllCommands() {
+        System.out.println("Not implemented.");
     }
 
     // Requires valid non-null command

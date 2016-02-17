@@ -41,7 +41,7 @@ public class TodoManager extends Manager {
         if (done == null) {
             done = new LinkedTaskDone((TodoTask) head);
         } else
-            addDone((LinkedTaskDone) head);
+            addDone(new LinkedTaskDone((TodoTask) head));
 
         super.remove(1);
     }
@@ -58,10 +58,12 @@ public class TodoManager extends Manager {
         Task temp = head;
         while (temp.getNext() != null) {
             count += temp.getPomodoros();
+            temp = temp.getNext();
         }
         temp = done;
         while (temp.getNext() != null) {
             count += temp.getPomodoros();
+            temp = temp.getNext();
         }
 
         return count % 4 == 0 && count > 0;

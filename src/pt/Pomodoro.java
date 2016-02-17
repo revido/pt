@@ -5,6 +5,8 @@ import pt.taskManagement.TodoTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 class Pomodoro implements Runnable {
 
@@ -17,6 +19,7 @@ class Pomodoro implements Runnable {
     private final Config config;
 
 
+    // Initialize the pomodoro
     public Pomodoro(boolean isLongBreak, TodoTask currentTask, Config config) {
         this.config = config;
         time = config.getPomodoro();
@@ -31,6 +34,7 @@ class Pomodoro implements Runnable {
         start();
     }
 
+    // Run the pomodoro timer
     private void start() {
         Debugger.log("Thread started");
         Thread keyListenerThread = new Thread(new KeyListener(Thread.currentThread()));
@@ -58,15 +62,18 @@ class Pomodoro implements Runnable {
         Debugger.log("Thread finished");
     }
 
+    // When the pomodoro (not in break) is started onWork is set to true
     public void setOnWork(boolean onWork) {
         Debugger.log("Setting onWork to " + ((onWork) ? "true" : "false"));
         this.onWork = onWork;
     }
 
+    // Count one second down
     private void countDown() {
         time--;
     }
 
+    // A second
     private void sleep() throws InterruptedException {
         Thread.sleep(1000);
     }
@@ -75,6 +82,7 @@ class Pomodoro implements Runnable {
         return (isLongBreak) ? config.getLongBreak() : config.getShortBreak();
     }
 
+    // Prints the current time on the screen
     private void printTime() {
         if (continuous) {
             String output = printTimeSingle();
@@ -84,6 +92,7 @@ class Pomodoro implements Runnable {
         }
     }
 
+    // Returns the current time as string in the format: mm:ss
     public String printTimeSingle() {
         String type, minutes, seconds;
         if (isOnWork())
@@ -93,8 +102,10 @@ class Pomodoro implements Runnable {
 
         int tempTime = this.getTime();
 
-        minutes = Integer.toString(Math.floorDiv(tempTime, 60));
-        seconds = Integer.toString(Math.floorMod(tempTime, 60));
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date(tempTime*1000));
+        minutes = Integer.toString(c.get(Calendar.MINUTE));
+        seconds= Integer.toString(c.get(Calendar.SECOND));
 
         if (seconds.length() < 2) {
             seconds = "0" + seconds;
@@ -106,6 +117,7 @@ class Pomodoro implements Runnable {
         return type + " " + minutes + ":" + seconds;
     }
 
+    // Sends a message to PushBullet
     private void sendMsg(String msg) {
         try {
             if (config.getAllowMsg()) {
@@ -121,6 +133,7 @@ class Pomodoro implements Runnable {
         }
     }
 
+    // Returns the message for long or short break
     private String getBreakMsg() {
         if (isLongBreak)
             return config.getLongMsg();
@@ -128,19 +141,23 @@ class Pomodoro implements Runnable {
             return config.getShortMsg();
     }
 
+    // Sets a variable that determines of the output is printed continuously
     public void setContinuous(boolean continuous) {
         Debugger.log("Setting continuous to " + ((continuous) ? "true" : "false"));
         this.continuous = continuous;
     }
 
+    // Returns the current time of the active pomodoro
     private int getTime() {
         return this.time;
     }
 
+    // Checks if the current pomodoro is active
     private boolean isOnWork() {
         return onWork;
     }
 
+    // Tests if the pomodoro (incl. break) is ticking
     public boolean isAlive() {
         return getTime() > 0;
     }

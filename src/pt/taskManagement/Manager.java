@@ -37,13 +37,12 @@ public abstract class Manager {
             }
 
             prev.setNext(temp.getNext());
-            if(head.getNext() == null)
+            if (head.getNext() == null)
                 tail = head;
         }
         changed = true;
     }
 
-    // Switch position of two tasks in the todo list
     public void switchPos(int id1, int id2) {
         if (id1 == id2) return;
 
@@ -61,31 +60,33 @@ public abstract class Manager {
             return;
         }
 
-        Task onenext = one.getNext();
-        Task prevtwo = getTaskFromId(id2 - 1);
+        // if adjacent
+        if (one.getNext() == two) {
+            Task prev = getTaskFromId(id1 - 1);
+            Task after = two.getNext();
 
-        if (one == head) {
-            one.setNext(two.getNext());
-            two.setNext(onenext);
+            prev.setNext(two);
+            two.setNext(one);
+            one.setNext(after);
 
-            prevtwo.setNext(one);
-            head = two;
         } else {
-            Task prevone = getTaskFromId(id1 - 1);
-            Task twonext = two.getNext();
+            Task onePrev = getTaskFromId(id1 - 1);
+            Task twoPrev = getTaskFromId(id2 - 1);
 
-            one.setNext(twonext);
-            prevone.setNext(two);
 
-            if (two != onenext) {
-                two.setNext(onenext);
-                prevtwo.setNext(one);
-            } else {
-                onenext.setNext(one);
-            }
+            Task oneNext = one.getNext();
+            Task twoNext = two.getNext();
 
+            // links b in a's old position
+            onePrev.setNext(two);
+            two.setNext(oneNext);
+
+            // links a in b's old position
+            twoPrev.setNext(one);
+            one.setNext(twoNext);
         }
-        changed = true;
+        if (id1 == 1)
+            head = two;
     }
 
     // 0 < id <= last_id && name != null && !name.equals("")
@@ -113,12 +114,15 @@ public abstract class Manager {
     // 0 < id <= last_id
     // Returns the task from the given id
     Task getTaskFromId(int id) {
+        if (id == 0)
+            id = 1;
         int count = id;
 
         Task temp = head;
         while (count != 1) {
             temp = temp.getNext();
-            if (temp == null) throw new NullPointerException();
+//            if (temp == null) throw new NullPointerException();
+            if (temp == null) return temp;
 
             count--;
         }

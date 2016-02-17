@@ -82,9 +82,9 @@ public abstract class Task {
 
     @Override
     public String toString() {
-        String s = name + " " + note;
+        String s = name;
         if (next != null)
-            s += "\r\n" + next.toString();
+            return name + next.toString();
 
         return s;
     }
