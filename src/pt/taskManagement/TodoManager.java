@@ -52,6 +52,7 @@ public class TodoManager extends Manager {
         t.displayTasks((TodoTask) head, done);
     }
 
+    // Returns true every four marks
     public boolean isLongBreak() {
         int count = 0;
 
@@ -60,10 +61,12 @@ public class TodoManager extends Manager {
             count += temp.getPomodoros();
             temp = temp.getNext();
         }
-        temp = done;
-        while (temp.getNext() != null) {
-            count += temp.getPomodoros();
-            temp = temp.getNext();
+        if(done != null) {
+            temp = done;
+            while (temp.getNext() != null) {
+                count += temp.getPomodoros();
+                temp = temp.getNext();
+            }
         }
 
         return count % 4 == 0 && count > 0;

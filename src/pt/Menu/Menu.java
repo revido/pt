@@ -82,6 +82,7 @@ public class Menu {
         operationList.put("save", new SaveOperation(man));
         operationList.put("start", new StartOperation(man));
         operationList.put("switch", new SwitchOperation(man.getTodoMan()));
+        operationList.put("sw", new SwitchOperation(man.getTodoMan()));
         operationList.put("t", new GetTimeOperation(man));
         operationList.put("timer", new GetTimeOperation(man));
 //        operationList.put("undoChanges", new UndoOperation(man));

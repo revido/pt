@@ -60,6 +60,7 @@ public class PtManager {
 
     public void timer() {
         try {
+            System.out.println("\r\nCurrent task: " + todoMan.getTask().getName());
             if (running != null && running.isAlive()) {
                 // timer hasn't goten to 0
                 pp.setContinuous(true);
