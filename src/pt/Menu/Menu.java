@@ -67,8 +67,10 @@ public class Menu {
     // Creates a HashMap of menu items with their operations
     private void createMenu() {
         operationList.put("add", new AddOperation(man.getTodoMan()));
-//        operationList.put("activity", new ActivityOperation(actMan));
-//        operationList.put("act", new ActivityOperation(actMan));
+        operationList.put("activity", new ActivityOperation(man, in));
+        operationList.put("act", new ActivityOperation(man, in));
+        operationList.put("rename", new ChangeNameOperation(man.getTodoMan()));
+        operationList.put("renote", new ChangeNoteOperation(man.getTodoMan()));
         operationList.put("done", new FinishOperation(man.getTodoMan()));
         operationList.put("exit", new ExitOperation(man));
 //        operationList.put("get", new GetTaskOperation(man.getTodoMan()));

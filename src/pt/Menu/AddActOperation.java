@@ -4,10 +4,10 @@ import pt.taskManagement.Manager;
 
 import java.util.Scanner;
 
-public class AddOperation implements Operation {
+public class AddActOperation implements Operation {
     private final Manager man;
 
-    public AddOperation(Manager man) {
+    public AddActOperation(Manager man) {
         this.man = man;
     }
 
@@ -17,18 +17,24 @@ public class AddOperation implements Operation {
             man.add(params[0], "", -1);
         } else {
             Scanner scanner = new Scanner(System.in);
+            String s;
 
             System.out.print("Name: ");
             String name = scanner.nextLine();
+
+
+            System.out.print("Effort [1]: ");
+            s = scanner.nextLine();
+            int effort = s.equals("") ? 1 : Integer.parseInt(s);
 
             System.out.print("Note [empty]: ");
             String note = scanner.nextLine();
 
             System.out.print("Position [last]: ");
-            String s = scanner.nextLine();
+            s = scanner.nextLine();
             int pos = s.equals("") ? -1 : Integer.parseInt(s);
 
-            man.add(name, note, pos);
+            man.addAct(name, note, effort, pos);
         }
     }
 

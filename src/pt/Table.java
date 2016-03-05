@@ -1,6 +1,7 @@
 package pt;
 
 import pt.taskManagement.LinkedTaskDone;
+import pt.taskManagement.Task;
 import pt.taskManagement.TodoTask;
 
 public class Table {
@@ -15,17 +16,26 @@ public class Table {
         System.out.format("+------+----+----------------------------------+---------------+---------------------------+%n");
     }
 
-    private void displayTasks(TodoTask t) {
-        String leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
-
-        int i = 1;
-        while (t != null) {
-            System.out.format(leftAlignFormat, "", i, t.getName(), t.getPomodoros(), t.getNote());
-            t = (TodoTask) t.getNext();
-            i++;
+    private void displayTasks(Task t) {
+        String leftAlignFormat;
+        if (t instanceof TodoTask) {
+            leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
+            int i = 1;
+            while (t != null) {
+                System.out.format(leftAlignFormat, "", i, t.getName(), t.getPomodoros(), t.getNote());
+                t = t.getNext();
+                i++;
+            }
+        } else {
+            leftAlignFormat = "| %2s | %-32s | %-13s | %-25s |%n";
+            int i = 1;
+            while (t != null) {
+                System.out.format(leftAlignFormat, i, t.getName(), t.getPomodoros(), t.getNote());
+                t = t.getNext();
+                i++;
+            }
         }
     }
-
 
     private void displayDoneTasks(LinkedTaskDone t) {
         String leftAlignFormat = "| %4s | %2s | %-32s | %-13s | %-25s |%n";
@@ -34,6 +44,14 @@ public class Table {
             System.out.format(leftAlignFormat, "DONE", "", t.getName(), t.getPomodoros(), t.getNote());
             t = (LinkedTaskDone) t.getNext();
         }
+    }
+
+    public void displayActivities(Task head) {
+        System.out.format("+----+----------------------------------+---------------+---------------------------+%n");
+        System.out.format("| ID |               Name               |     Effort    |           Notes           |%n");
+        System.out.format("+----+----------------------------------+---------------+---------------------------+%n");
+        displayTasks(head);
+        System.out.format("+----+----------------------------------+---------------+---------------------------+%n");
     }
 
 //

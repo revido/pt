@@ -22,13 +22,15 @@ public abstract class Task {
         this.date = new Date();
     }
 
-    public Task(Task t) {
-        this.name = t.getName();
-        this.note = t.getNote();
-        this.pomodoros = t.getPomodoros();
-        this.next = t.getNext();
-        this.date = t.getDate();
-    }
+// --Commented out by Inspection START (3/6/16 12:30 AM):
+//    public Task(Task t) {
+//        this.name = t.getName();
+//        this.note = t.getNote();
+//        this.pomodoros = t.getPomodoros();
+//        this.next = t.getNext();
+//        this.date = t.getDate();
+//    }
+// --Commented out by Inspection STOP (3/6/16 12:30 AM)
 
     Task(String name, String note, int pomodoros, Date date) {
         this.name = name;

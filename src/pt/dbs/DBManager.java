@@ -1,5 +1,6 @@
 package pt.dbs;
 
+import pt.taskManagement.ActivityTask;
 import pt.taskManagement.LinkedTaskDone;
 import pt.taskManagement.Task;
 import pt.taskManagement.TodoTask;
@@ -87,6 +88,34 @@ public class DBManager {
         return null;
     }
 
+    public ActivityTask returnActivities() {
+        ResultSet rs = null;
+        try {
+            // until is the date that this task was added NOT the date until the task has to be done
+            // This needs to change!
+            String sql = "SELECT name, effort, until FROM activity_inventory WHERE cast(until As DATE)=CURDATE();";
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            ActivityTask t = null;
+            while (rs.next()) {
+                ActivityTask temp = new ActivityTask(rs.getString(2), "", rs.getInt(3), rs.getBoolean(4));
+                if (t == null)
+                    t = temp;
+                else
+                    t.setNext(temp);
+            }
+            return t;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
     public LinkedTaskDone returnDoneTasks() {
         ResultSet rs = null;
         try {
@@ -162,18 +191,34 @@ public class DBManager {
     }
 
     private void prepareStatement(Task t) throws SQLException {
-        PreparedStatement pStmt = conn.prepareStatement("INSERT INTO info VALUES(null, ?, ?, ?, ?, ?, ?)");
-        int id = 1;
-        while(t.getNext() != null) {
-            pStmt.setTimestamp(1, new java.sql.Timestamp(t.getDate().getTime()));
-            pStmt.setInt(2, id);
-            pStmt.setBoolean(3, t instanceof TodoTask);
-            pStmt.setString(4, t.getName());
-            pStmt.setInt(5, t.getPomodoros());
-            pStmt.setString(6, t.getNote());
-            pStmt.execute();
-            t = t.getNext();
-            id++;
+        if(t instanceof TodoTask) {
+            PreparedStatement pStmt = conn.prepareStatement("INSERT INTO info VALUES(null, ?, ?, ?, ?, ?, ?)");
+            int id = 1;
+            while (t.getNext() != null) {
+                pStmt.setTimestamp(1, new java.sql.Timestamp(t.getDate().getTime()));
+                pStmt.setInt(2, id);
+                pStmt.setBoolean(3, t instanceof TodoTask);
+                pStmt.setString(4, t.getName());
+                pStmt.setInt(5, t.getPomodoros());
+                pStmt.setString(6, t.getNote());
+                pStmt.execute();
+                t = t.getNext();
+                id++;
+            }
+        }
+        else {
+            PreparedStatement pStmt = conn.prepareStatement("INSERT INTO activity_inventory VALUES(null, ?, ?, ?, ?, ?)");
+            int id = 1;
+            while (t.getNext() != null) {
+                pStmt.setInt(1, id);
+                pStmt.setString(2, t.getName());
+                pStmt.setString(3, t.getNote());
+                pStmt.setInt(4, t.getPomodoros());
+                pStmt.setTimestamp(5, new java.sql.Timestamp(t.getDate().getTime()));
+                pStmt.execute();
+                t = t.getNext();
+                id++;
+            }
         }
     }
 
@@ -186,6 +231,25 @@ public class DBManager {
 
                 prepareStatement(t);
                 prepareStatement(tt);
+
+                System.out.println("Saved.");
+            } else
+                System.out.println("No changes made.");
+
+            // Change changed to false
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveTodayActivities(boolean changed, ActivityTask task) {
+        try {
+            if (changed) {
+                Statement stmt = conn.createStatement();
+                String sql = "DELETE FROM info WHERE cast(current_timestamp() As DATE)=CURDATE();";
+                stmt.executeUpdate(sql);
+
+                prepareStatement(task);
 
                 System.out.println("Saved.");
             } else

@@ -37,6 +37,8 @@ public abstract class Manager {
             }
 
             prev.setNext(temp.getNext());
+            if (temp == tail)
+                tail = prev;
             if (head.getNext() == null)
                 tail = head;
         }
@@ -178,4 +180,36 @@ public abstract class Manager {
             }
         }
     }
+
+    public void addAct(String name, String note, int effort, int pos) {
+        Task t = new ActivityTask(name, note, effort, false);
+        if (pos == -1)
+            this.add(t);
+        else {
+            if (head != null) {
+                Task prev = null;
+                Task temp = head;
+                while (temp != null) {
+                    if (pos == 1) {
+                        if (prev == null) {
+                            t.setNext(head);
+                            head = t;
+                        } else {
+                            t.setNext(prev.getNext());
+                            prev.setNext(t);
+                        }
+                        break;
+                    }
+                    prev = temp;
+                    temp = temp.getNext();
+                    pos--;
+                }
+                if (temp == null) {
+                    add(t);
+                }
+            }
+        }
+    }
+
+    public abstract void displayTasks();
 }

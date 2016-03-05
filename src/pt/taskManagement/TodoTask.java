@@ -11,11 +11,13 @@ public class TodoTask extends Task {
         super(name, notes, pomodoros);
     }
 
-    // t != null
-    // Creates a new task with information from task t
-    public TodoTask(TodoTask t) {
-        this(t.getName(), t.getNote(), t.getPomodoros());
-    }
+// --Commented out by Inspection START (3/6/16 12:30 AM):
+//    // t != null
+//    // Creates a new task with information from task t
+//    public TodoTask(TodoTask t) {
+//        this(t.getName(), t.getNote(), t.getPomodoros());
+//    }
+// --Commented out by Inspection STOP (3/6/16 12:30 AM)
 
     // Import task from Database
     public TodoTask(Date date, String name, int pomodoros, String note) {

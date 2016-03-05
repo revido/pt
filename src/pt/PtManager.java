@@ -3,6 +3,8 @@ package pt;
 import pt.config.Config;
 import pt.dbs.DBConnector;
 import pt.dbs.DBManager;
+import pt.taskManagement.ActivityManager;
+import pt.taskManagement.ActivityTask;
 import pt.taskManagement.TodoManager;
 import pt.taskManagement.TodoTask;
 
@@ -15,6 +17,7 @@ public class PtManager {
     private Thread running;
     private Pomodoro pp;
     private final TodoManager todoMan;
+    private final ActivityManager actMan;
 
     public PtManager(Config conf) {
         this.conf = conf;
@@ -25,6 +28,7 @@ public class PtManager {
         dbMan = new DBManager(conn);
 
         todoMan = new TodoManager();
+        actMan = new ActivityManager();
         queryTasks();
     }
 
@@ -34,6 +38,7 @@ public class PtManager {
 
     public void saveTasks() {
         dbMan.saveTodayTasks(todoMan.isChanged(), (TodoTask) todoMan.getTask(), todoMan.getDone());
+        dbMan.saveTodayActivities(actMan.isChanged(), (ActivityTask) actMan.getTask());
     }
 
     // Queries the unfinished tasks from yesterday and todays tasks
@@ -46,6 +51,9 @@ public class PtManager {
 
         todoMan.addDone(dbMan.returnDoneTasks());
         todoMan.setChanged(false);
+
+        actMan.add(dbMan.returnActivities());
+        actMan.setChanged(false);
     }
 
 
@@ -93,5 +101,8 @@ public class PtManager {
 
     public TodoManager getTodoMan() {
         return todoMan;
+    }
+    public ActivityManager getActMan() {
+        return actMan;
     }
 }
